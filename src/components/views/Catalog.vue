@@ -1,5 +1,12 @@
 <template>
-<div>I AM HOME</div>
+<div>
+  <p>I AM CATALOG</p>
+  <p>I AM CATALOG</p>
+  <p>I AM CATALOG</p>
+  <p>I AM CATALOG</p>
+  <p>I AM CATALOG</p>
+  <p>I AM CATALOG</p>
+</div>
 </template>
 
 <script>

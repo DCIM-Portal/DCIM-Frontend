@@ -17,10 +17,6 @@ export default {
 </script>
 
 <style lang="scss">
-@import '~bulma';
-html {
-  background-color: #f5f5f5;
-}
 .app-main {
   padding-top: 1rem;
 }

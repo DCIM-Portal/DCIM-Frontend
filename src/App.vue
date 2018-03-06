@@ -2,6 +2,7 @@
   <div id="app">
     <app-hero></app-hero>
     <app-main></app-main>
+    <vue-progress-bar></vue-progress-bar>
   </div>
 </template>
 
@@ -17,6 +18,10 @@ export default {
 }
 </script>
 
-<style>
-
+<style lang="scss">
+@import '~bulma';
+html {
+  background-color: #f5f5f5;
+  overflow-y: auto;
+}
 </style>

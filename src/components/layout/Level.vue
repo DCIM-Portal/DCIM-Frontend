@@ -1,29 +1,67 @@
 <template>
-  <nav class="level app-levelbar">
+  <nav v-if="hideLevelOnHome" class="level app-levelbar">
     <div class="level-left">
       <div class="level-item">
         <h3 class="subtitle is-5">
-          <strong>TITLE</strong>
+          <strong>{{ name }}</strong>
         </h3>
       </div>
     </div>
 
     <div class="level-right is-hidden-mobile">
-      <breadcrumb></breadcrumb>
+      <breadcrumb :list="list"></breadcrumb>
     </div>
   </nav>
 </template>
 
 <script>
-import Breadcrumb from './Breadcrumb.vue'
+import Breadcrumb from 'vue-bulma-breadcrumb'
 export default {
   components: {
-    'breadcrumb': Breadcrumb
+    Breadcrumb
+  },
+  data () {
+    return {
+      list: null
+    }
+  },
+
+  created () {
+    this.getList()
+  },
+
+  computed: {
+    name () {
+      return this.$route.name
+    },
+    hideLevelOnHome() {
+      return this.$route.name !== "Home"
+    }
+  },
+
+  methods: {
+    getList () {
+      let matched = this.$route.matched.filter(item => item.name)
+      let first = matched[0]
+      if (first && (first.name !== 'Home' || first.path !== '')) {
+        matched = [{ name: 'Home', path: '/' }].concat(matched)
+      }
+      this.list = matched
+    }
+  },
+
+  watch: {
+    $route () {
+      this.getList()
+    }
   }
+
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
-
+<style lang="scss">
+.breadcrumb a {
+  padding: 0;
+}
 </style>

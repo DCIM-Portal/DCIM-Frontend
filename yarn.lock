@@ -5913,6 +5913,10 @@ vm-browserify@0.0.4:
   dependencies:
     indexof "0.0.1"
 
+vue-bulma-breadcrumb@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/vue-bulma-breadcrumb/-/vue-bulma-breadcrumb-1.0.1.tgz#5d9e5756f538f94feb8e265c3c947a39d87536f7"
+
 vue-hot-reload-api@^2.2.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/vue-hot-reload-api/-/vue-hot-reload-api-2.3.0.tgz#97976142405d13d8efae154749e88c4e358cf926"
@@ -5934,6 +5938,10 @@ vue-loader@^13.3.0:
     vue-hot-reload-api "^2.2.0"
     vue-style-loader "^3.0.0"
     vue-template-es2015-compiler "^1.6.0"
+
+vue-progressbar@^0.7.3:
+  version "0.7.3"
+  resolved "https://registry.yarnpkg.com/vue-progressbar/-/vue-progressbar-0.7.3.tgz#28ca98fa1afa603644a443f18c7c45fe5d290144"
 
 vue-router@^3.0.1:
   version "3.0.1"
@@ -5960,6 +5968,10 @@ vue-template-es2015-compiler@^1.6.0:
 vue@^2.5.2:
   version "2.5.13"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.5.13.tgz#95bd31e20efcf7a7f39239c9aa6787ce8cf578e1"
+
+vuex@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.0.1.tgz#e761352ebe0af537d4bb755a9b9dc4be3df7efd2"
 
 watchpack@^1.4.0:
   version "1.5.0"

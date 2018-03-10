@@ -7,8 +7,10 @@
         <div class="container">
           <h1 class="title is-2 is-uppercase">
             <img class="is-pulled-left" width="45" src="@/assets/img/logo.svg">
-            SDCG Labs<br>
-            <p class="subtitle is-4 is-capitalized">Datacenter Management Portal</p>
+            --TITLE--<br>
+            <p class="subtitle is-4 is-capitalized">
+              Datacenter Management Portal
+            </p>
           </h1>
         </div>
       </div>
@@ -20,35 +22,26 @@
     :class="{ 'is-hidden': hideOnHome }" >
       <div class="navbar-link">
         <img src="@/assets/img/logo.svg" alt="SDCG Management Portal">
-        SDCG Labs {{ main_route_name }}
+        --TITLE-- {{ parent_route }}
       </div>
-      <app-navmenu></app-navmenu>
+      <app-navmenu :parent_route="parent_route" :routes="routes"></app-navmenu>
     </div>
 
     <!-- Hero footer -->
     <div class="hero-foot">
-      <nav class="tabs is-boxed is-small is-right" :class="{ 'push-down': !hideOnHome }">
+      <nav class="tabs is-boxed is-small is-right"
+        :class="{ 'push-down': !hideOnHome }"
+      >
         <div class="container">
           <ul>
 
-            <!-- Home Link -->
-            <router-link tag="li" to="/" exact>
-              <a>Home</a>
-            </router-link>
-
-            <!-- Catalog Link -->
-            <router-link tag="li" to="/catalog" exact>
-              <a>Catalog</a>
-            </router-link>
-
-            <!-- Documentation Link -->
-            <router-link tag="li" to="/documentation" exact>
-              <a>Documentation</a>
-            </router-link>
-
-            <!-- Admin Link -->
-            <router-link tag="li" to="/admin" exact>
-              <a>Admin</a>
+            <!-- Parent Links -->
+            <router-link tag="li" v-for="route in routes"
+              :to="route.path"
+              :key="route.name"
+              :class="{'router-link-active': parentIsActive(route.name)}"
+            exact>
+              <a>{{ route.name }}</a>
             </router-link>
 
           </ul>
@@ -61,16 +54,32 @@
 
 <script>
 import NavMenu from '@/components/layout/NavMenu'
+import ParentRoute from '@/mixins/parentRoute'
+import HideOnHome from '@/mixins/hideOnHome'
 export default {
   components: {
     'app-navmenu': NavMenu
   },
-  computed: {
-    hideOnHome() {
-      return this.$route.name == "Home"
-    },
-    main_route_name () {
-      return this.$route.name
+  methods: {
+    parentIsActive(parent) {
+      return this.$route.matched[0].name == parent
+    }
+  },
+  mixins: [ParentRoute, HideOnHome],
+  created() {
+    this.$router.options.routes.forEach(route => {
+      console.log(this.routes)
+      this.routes.push({
+        name: route.name,
+        path: route.path,
+        children: route.children,
+        meta: route.meta
+      })
+    })
+  },
+  data() {
+    return {
+      routes: []
     }
   }
 }
@@ -79,7 +88,7 @@ export default {
 <style lang="scss" scoped>
 // Vue Transition Styles
 .smooth-enter-active, .smooth-leave-active {
-  transition: all 0.25s;
+  transition: all 0.17s;
   max-height: 175px;
 }
 .smooth-enter, .smooth-leave-to {
@@ -94,7 +103,6 @@ export default {
     linear-gradient(140deg, #243b42 50%, #456c86 100%);
   position: relative;
 }
-
 
 // Custom Tabs Styling
 .hero.is-info {
@@ -121,6 +129,7 @@ export default {
 
 // Mega Menu Styling
 .navbar-item.is-mega {
+  transition: all 0.25s;
   position: static;
   margin-bottom: -43px;
   max-width: 285px;
@@ -129,7 +138,7 @@ export default {
     background-color: transparent;
     cursor: default;
   }
-  .navbar-item.has-dropdown:hover .navbar-link {
+  .navbar-item.has-dropdown.is-mega:hover .navbar-link {
     background-color: transparent;
   }
 }
@@ -154,6 +163,9 @@ export default {
   .navbar-item.is-mega {
     max-width: initial;
     margin-bottom: 0;
+  }
+  .navbar-item.has-dropdown.is-mega .navbar-link {
+    color: white;
   }
 }
 </style>

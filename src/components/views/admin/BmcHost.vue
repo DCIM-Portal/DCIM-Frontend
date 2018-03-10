@@ -1,11 +1,6 @@
 <template>
 <div>
-  <p>I AM CATALOG</p>
-  <p>I AM CATALOG</p>
-  <p>I AM CATALOG</p>
-  <p>I AM CATALOG</p>
-  <p>I AM CATALOG</p>
-  <p>I AM CATALOG</p>
+  <p>I AM BMC Host</p>
 </div>
 </template>
 

@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="hideLevelOnHome" class="level app-levelbar">
+  <nav v-if="!hideOnHome" class="level app-levelbar">
     <div class="level-left">
       <div class="level-item">
         <h3 class="subtitle is-5">
@@ -16,6 +16,7 @@
 
 <script>
 import Breadcrumb from 'vue-bulma-breadcrumb'
+import HideOnHome from '@/mixins/hideOnHome'
 export default {
   components: {
     Breadcrumb
@@ -25,20 +26,15 @@ export default {
       list: null
     }
   },
-
   created () {
     this.getList()
   },
-
   computed: {
     name () {
       return this.$route.name
-    },
-    hideLevelOnHome() {
-      return this.$route.name !== "Home"
     }
   },
-
+  mixins: [HideOnHome],
   methods: {
     getList () {
       let matched = this.$route.matched.filter(item => item.name)
@@ -49,17 +45,14 @@ export default {
       this.list = matched
     }
   },
-
   watch: {
     $route () {
       this.getList()
     }
   }
-
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
 .breadcrumb a {
   padding: 0;

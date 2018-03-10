@@ -1,6 +1,7 @@
 <template>
   <div>
     I AM Admin
+    <router-view></router-view>
   </div>
 </template>
 
@@ -13,7 +14,6 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss" scoped>
 
 </style>

@@ -19,6 +19,10 @@ export default {
 </script>
 
 <style lang="scss">
+@import '~animate.css';
+.animated {
+  animation-duration: .177s;
+}
 @import '~bulma';
 html {
   background-color: #f5f5f5;

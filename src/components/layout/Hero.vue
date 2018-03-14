@@ -16,28 +16,40 @@
       </div>
     </transition>
 
+
     <!-- Nav Mega Menu -->
     <div class="navbar-item has-dropdown
-    is-hoverable is-mega is-pulled-left"
-    :class="{ 'is-hidden': hideOnHome }" >
+      is-mega is-pulled-left" @click="isActive = !isActive"
+      :class="{ 'is-hidden': hideOnHome, 'rotate': isActive }"
+      v-on-clickaway="away"
+    >
       <div class="navbar-link">
-        <img src="@/assets/img/logo.svg" alt="SDCG Management Portal">
-        --TITLE-- {{ parent_route }}
+        <img src="@/assets/img/logo.svg" alt="TITLE">
+        TITLE {{ parent_route }}
       </div>
-      <app-navmenu :parent_route="parent_route" :routes="routes"></app-navmenu>
+      <transition
+        name="menu"
+        enter-active-class="fadeInDown"
+        leave-active-class="fadeOutUp">
+        <app-navmenu
+          :class="{'is-active': isActive}"
+          :parent_route="parent_route"
+          :routes="routes"
+          class="animated"
+          v-if="isActive"
+        />
+      </transition>
     </div>
 
     <!-- Hero footer -->
     <div class="hero-foot">
-      <nav class="tabs is-boxed is-small is-right"
-        :class="{ 'push-down': !hideOnHome }"
-      >
+      <nav class="tabs is-boxed is-small is-right">
         <div class="container">
           <ul>
 
             <!-- Parent Links -->
             <router-link tag="li" v-for="route in routes"
-              :to="route.path"
+              :to="route"
               :key="route.name"
               :class="{'router-link-active': parentIsActive(route.name)}"
             exact>
@@ -56,6 +68,8 @@
 import NavMenu from '@/components/layout/NavMenu'
 import ParentRoute from '@/mixins/parentRoute'
 import HideOnHome from '@/mixins/hideOnHome'
+import RouteList from '@/mixins/routeList'
+import { mixin as ClickAway } from 'vue-clickaway';
 export default {
   components: {
     'app-navmenu': NavMenu
@@ -63,23 +77,16 @@ export default {
   methods: {
     parentIsActive(parent) {
       return this.$route.matched[0].name == parent
+    },
+    away: function() {
+      this.isActive = false
     }
   },
-  mixins: [ParentRoute, HideOnHome],
-  created() {
-    this.$router.options.routes.forEach(route => {
-      console.log(this.routes)
-      this.routes.push({
-        name: route.name,
-        path: route.path,
-        children: route.children,
-        meta: route.meta
-      })
-    })
-  },
+  mixins: [ParentRoute, HideOnHome, RouteList, ClickAway],
   data() {
     return {
-      routes: []
+      routes: [],
+      isActive: false
     }
   }
 }
@@ -88,7 +95,7 @@ export default {
 <style lang="scss" scoped>
 // Vue Transition Styles
 .smooth-enter-active, .smooth-leave-active {
-  transition: all 0.17s;
+  transition: all 0.25s;
   max-height: 175px;
 }
 .smooth-enter, .smooth-leave-to {
@@ -97,6 +104,40 @@ export default {
   opacity: 0;
 }
 
+// Animate CSS customizations
+.fadeInDown {
+  -webkit-animation-name: fadeInDown;
+  animation-name: fadeInDown;
+}
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -5%, 0);
+    transform: translate3d(0, -10%, 0);
+  }
+  to {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.fadeOutUp {
+  -webkit-animation-name: fadeOutUp;
+  animation-name: fadeOutUp;
+}
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    -webkit-transform: translate3d(0, -5%, 0);
+    transform: translate3d(0, -10%, 0);
+  }
+}
 // Custom Hero Styling
 .hero.is-info.is-bold {
   background-image:
@@ -122,11 +163,6 @@ export default {
   }
 }
 
-// Class to push tabs down with nav-menu
-.push-down {
-  margin-top: 13px;
-}
-
 // Mega Menu Styling
 .navbar-item.is-mega {
   transition: all 0.25s;
@@ -134,6 +170,9 @@ export default {
   margin-bottom: -43px;
   max-width: 285px;
   z-index: 2;
+  .is-active {
+    display: block;
+  }
   .navbar-link:hover {
     background-color: transparent;
     cursor: default;
@@ -157,6 +196,18 @@ export default {
   display: -ms-flexbox;
   display: flex;
 }
+.navbar-link::after {
+  transition: all 0.25s;
+}
+
+.hero-foot {
+  margin-top: 13px;
+}
+.navbar-item.is-mega.rotate .navbar-link::after {
+  -webkit-transform: rotate(135deg);
+  transform: rotate(135deg);
+  margin-top: -0.1rem;
+}
 
 // Media customizations
 @media screen and (max-width: 1024px) {
@@ -164,8 +215,23 @@ export default {
     max-width: initial;
     margin-bottom: 0;
   }
-  .navbar-item.has-dropdown.is-mega .navbar-link {
-    color: white;
+  .navbar-link::after {
+    border: 1px solid #3273dc;
+    border-right: 0;
+    border-top: 0;
+    content: " ";
+    display: block;
+    height: 0.5em;
+    pointer-events: none;
+    position: relative;
+    -webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+    -webkit-transform-origin: center;
+    transform-origin: center;
+    width: 0.5em;
+    margin-top: -0.3em;
+    margin-left: 0.9rem;
+    top: 50%;
   }
 }
 </style>

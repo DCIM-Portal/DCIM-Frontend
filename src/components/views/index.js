@@ -1,7 +1,14 @@
-export {Admin} from './Admin'
+import Admin from './Admin'
 
-export {Catalog} from './Catalog'
+import Catalog from './Catalog'
 
-export {Documentation} from './Documentation'
+import Documentation from './Documentation'
 
-export {Home} from './Home'
+import Home from './Home'
+
+export {
+  Admin,
+  Catalog,
+  Documentation,
+  Home
+}

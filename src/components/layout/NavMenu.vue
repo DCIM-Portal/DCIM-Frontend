@@ -1,28 +1,99 @@
 <template>
   <div class="navbar-dropdown">
     <div class="container is-fluid">
-        <app-admin-menu v-if="parent_route == 'Admin'">
-          <div slot="menu-content" class="column">
-            {{ routes }}
-          </div>
-        </app-admin-menu>
-      </div>
+      <app-menu-contents
+        v-for="route in routes"
+        v-if="route.name == parent_route"
+        :key="route.name"
+      >
+        <!-- Main menu slot -->
+        <div slot="main-menu" class="column">
+          <h1 class="title is-6 is-mega-menu-title">{{ route.name }} Main</h1>
+          <router-link class="navbar-item" :to="route" exact>
+            <div class="navbar-content">
+              <p class="has-text-info">{{ route.meta.section }}</p>
+              <small>{{ route.meta.info }}</small>
+            </div>
+          </router-link>
+        </div>
+
+        <!-- Child slot -->
+        <div slot="menu-content" class="column"
+          v-for="section in route.children"
+          :key="section.name"
+        >
+          <h1 class="title is-6 is-mega-menu-title">{{ section.name }}</h1>
+          <router-link class="navbar-item"
+            v-for="item in section.children"
+            :to="item"
+            :key="item.name"
+          exact>
+            <div class="navbar-content">
+              <p class="has-text-info">{{ item.name }}</p>
+              <small>{{ item.meta.info }}</small>
+            </div>
+          </router-link>
+        </div>
+
+      </app-menu-contents>
     </div>
+  </div>
 
 </template>
 
 <script>
-import AdminMenu from '@/components/views/navmenu/AdminMenu'
+import MenuContents from '@/components/views/MenuContents'
 import ParentRoute from '@/mixins/parentRoute'
 export default {
   props: ['parent_route', 'routes'],
   components: {
-    'app-admin-menu': AdminMenu
+    'app-menu-contents': MenuContents
   }
 }
 </script>
 
 
 <style lang="scss" scoped>
+// Mega-menu style customizations
+.hero {
+  .is-mega-menu-title {
+    margin-bottom: 0;
+    padding: .375rem 1rem;
+    color: #363636;
+  }
+  a:not(.button):not(.dropdown-item):not(.tag) {
+    color: black;
+  }
+}
+.has-text-info {
+  color: #456c86 !important;
+}
+.hero.is-info a.navbar-item:hover {
+  background-color: #f5f5f5;
+}
 
+// IE fix for columns in mobile view
+@media only screen and (max-width: 1024px) {
+  _:-ms-fullscreen, :root .columns:not(.is-desktop) {
+    display: block !important;
+  }
+}
+
+// General screen fixes
+@media screen and (max-width: 1024px) {
+  .hero {
+    .is-mega-menu-title {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    a:not(.button):not(.dropdown-item):not(.tag) {
+      color: #b9b9b9;
+    }
+  }
+  .has-text-info {
+    color: #91c8ec !important;
+  }
+  .hero.is-info a.navbar-item:hover {
+    background-color: #f5f5f521;
+  }
+}
 </style>

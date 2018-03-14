@@ -2,6 +2,8 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import store from './store'
+
+// Progress Bar
 import VueProgressBar from 'vue-progressbar'
 
 Vue.config.productionTip = false
@@ -11,6 +13,7 @@ Vue.use(VueProgressBar, {
   failedColor: 'red',
   height: '2px'
 })
+
 
 /* eslint-disable no-new */
 new Vue({

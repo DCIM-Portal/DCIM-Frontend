@@ -1,6 +1,6 @@
 <template>
 <div>
-  <p>I AM Zone</p>
+  <p>I AM Scan Request</p>
 </div>
 </template>
 

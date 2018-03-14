@@ -1,7 +1,9 @@
 <template>
   <div>
     I AM Admin
-    <router-view></router-view>
+    <transition name="router-transition">
+      <router-view/>
+    </transition>
   </div>
 </template>
 

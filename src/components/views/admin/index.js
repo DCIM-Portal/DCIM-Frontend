@@ -1,24 +1,22 @@
-import Zones from './Zone'
+// Main Admin Page
+import Admin from './Index'
 
-import BmcHosts from './BmcHost'
-
-import Enclosures from './Enclosure'
-
-import Racks from './Rack'
-
-import Credentials from './Credential'
-
-import OnboardRequests from './OnboardRequest'
-
-import ScanRequests from './ScanRequest'
-
+// Admin Sections
 import ScanOnboard from './sections/ScanOnboard'
-
 import Assets from './sections/Asset'
-
 import ZonesRacks from './sections/ZoneRack'
 
+// Admin Categories
+import Zones from './categories/Zone'
+import BmcHosts from './categories/BmcHost'
+import Enclosures from './categories/Enclosure'
+import Racks from './categories/Rack'
+import Credentials from './categories/Credential'
+import OnboardRequests from './categories/OnboardRequest'
+import ScanRequests from './categories/ScanRequest'
+
 export {
+  Admin,
   Zones,
   BmcHosts,
   Enclosures,

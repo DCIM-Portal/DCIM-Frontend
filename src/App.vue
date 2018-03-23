@@ -19,11 +19,17 @@ export default {
 </script>
 
 <style lang="scss">
+// Animate.css
 @import '~animate.css';
 .animated {
-  animation-duration: .177s;
+  animation-duration: 0.55s;
 }
-@import '~bulma';
+
+// Bulma and Buefy
+@import "~bulma";
+@import "~buefy/src/scss/buefy";
+
+// Set customized html standard
 html {
   background-color: #f5f5f5;
   overflow-y: auto;

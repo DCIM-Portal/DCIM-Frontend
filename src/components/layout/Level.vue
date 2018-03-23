@@ -1,5 +1,5 @@
 <template>
-  <nav v-if="!hideOnHome" class="level app-levelbar">
+  <nav v-if="!onHome" class="level app-levelbar">
     <div class="level-left">
       <div class="level-item">
         <h3 class="subtitle is-5">
@@ -16,7 +16,7 @@
 
 <script>
 import Breadcrumb from 'vue-bulma-breadcrumb'
-import HideOnHome from '@/mixins/hideOnHome'
+import onHome from '@/mixins/onHome'
 export default {
   components: {
     Breadcrumb
@@ -34,7 +34,7 @@ export default {
       return this.$route.name
     }
   },
-  mixins: [HideOnHome],
+  mixins: [onHome],
   methods: {
     getList () {
       let matched = this.$route.matched.filter(item => item.name)

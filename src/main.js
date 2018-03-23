@@ -1,21 +1,21 @@
 import Vue from 'vue'
+
+// Import common services
+import ApiService from '@/common/api.service'
+import { router } from '@/common/vue-router'
+import '@/common/vuex-router-sync'
+import '@/common/buefy'
+import '@/common/font-awesome'
+import '@/common/vue-progressbar'
+
+// Import app and vuex store
 import App from './App'
-import router from './router'
 import store from './store'
 
-// Progress Bar
-import VueProgressBar from 'vue-progressbar'
-
 Vue.config.productionTip = false
+ApiService.init()
+store.dispatch('checkAuth')
 
-Vue.use(VueProgressBar, {
-  color: 'rgb(32, 156, 238)',
-  failedColor: 'red',
-  height: '2px'
-})
-
-
-/* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,

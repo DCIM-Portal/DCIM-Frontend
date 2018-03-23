@@ -1,13 +1,67 @@
 <template>
   <section class="hero is-info is-bold">
 
-    <!-- Hero Body w/ Vue Transition -->
+    <!-- Login Modal -->
+    <app-login-modal v-if="!auth"/>
+
+    <!-- Logout button -->
+    <span class="navbar-item logout" @click.prevent="logout"
+      v-if="auth">
+      <a class="button is-danger">
+        <span class="icon">
+          <i class="fas fa-sign-out-alt"></i>
+        </span>
+        <span>Sign Out</span>
+      </a>
+    </span>
+
+    <!-- Hero Header -->
+    <transition
+      mode="out-in"
+      enter-active-class="fadeInLeft"
+      leave-active-class="fadeOut"
+      appear>
+      <div v-if="!onHome" class="hero-head animated">
+        <nav class="navbar">
+
+          <!-- Nav Menu Button -->
+          <div class="navbar-item has-dropdown is-mega"
+            :class="{
+              'is-hidden': onHome,
+              'rotate': menuIsActive
+            }"
+            v-on-clickaway="away">
+            <div class="navbar-link" @click="toggleMenu">
+              <img src="@/assets/img/logo.svg">
+              {{ title }} {{ parent_route }}
+            </div>
+
+            <!-- Nav Menu Contents -->
+            <transition
+              name="menu"
+              enter-active-class="fadeInDown"
+              leave-active-class="fadeOutUp">
+              <app-navmenu
+                :class="{'is-active': menuIsActive}"
+                :parent_route="parent_route"
+                :routes="routes"
+                class="animated"
+                v-if="menuIsActive"
+              />
+            </transition>
+          </div>
+
+        </nav>
+      </div>
+    </transition>
+
+    <!-- Hero Body -->
     <transition name="smooth">
-      <div v-if="hideOnHome" class="hero-body">
+      <div v-if="onHome" class="hero-body">
         <div class="container">
           <h1 class="title is-2 is-uppercase">
             <img class="is-pulled-left" width="45" src="@/assets/img/logo.svg">
-            --TITLE--<br>
+            {{ title }}<br>
             <p class="subtitle is-4 is-capitalized">
               Datacenter Management Portal
             </p>
@@ -16,39 +70,14 @@
       </div>
     </transition>
 
-
-    <!-- Nav Mega Menu -->
-    <div class="navbar-item has-dropdown
-      is-mega is-pulled-left" @click="isActive = !isActive"
-      :class="{ 'is-hidden': hideOnHome, 'rotate': isActive }"
-      v-on-clickaway="away"
-    >
-      <div class="navbar-link">
-        <img src="@/assets/img/logo.svg" alt="TITLE">
-        TITLE {{ parent_route }}
-      </div>
-      <transition
-        name="menu"
-        enter-active-class="fadeInDown"
-        leave-active-class="fadeOutUp">
-        <app-navmenu
-          :class="{'is-active': isActive}"
-          :parent_route="parent_route"
-          :routes="routes"
-          class="animated"
-          v-if="isActive"
-        />
-      </transition>
-    </div>
-
     <!-- Hero footer -->
-    <div class="hero-foot">
-      <nav class="tabs is-boxed is-small is-right">
-        <div class="container">
+    <div class="hero-foot" v-if="auth">
+      <nav class="tabs is-boxed is-small">
+        <div :class="{'container': onHome}">
           <ul>
 
             <!-- Parent Links -->
-            <router-link tag="li" v-for="route in routes"
+            <router-link tag="li" v-for="route in filterRoutes"
               :to="route"
               :key="route.name"
               :class="{'router-link-active': parentIsActive(route.name)}"
@@ -66,78 +95,72 @@
 
 <script>
 import NavMenu from '@/components/layout/NavMenu'
-import ParentRoute from '@/mixins/parentRoute'
-import HideOnHome from '@/mixins/hideOnHome'
-import RouteList from '@/mixins/routeList'
+import LoginModal from '@/components/views/auth/LoginModal'
+import { ParentRoute, RouteList, ToggleMenu, OnHome, Auth, WatchAuthModal } from '@/mixins'
 import { mixin as ClickAway } from 'vue-clickaway';
+import { APP_TITLE } from '@/common/config'
 export default {
   components: {
-    'app-navmenu': NavMenu
+    'app-navmenu': NavMenu,
+    'app-login-modal': LoginModal
   },
   methods: {
     parentIsActive(parent) {
       return this.$route.matched[0].name == parent
     },
     away: function() {
-      this.isActive = false
+      if (this.menuIsActive) {
+        this.menuIsActive = false
+      }
+    },
+    logout() {
+      this.$store.dispatch('logout');
     }
   },
-  mixins: [ParentRoute, HideOnHome, RouteList, ClickAway],
+  mixins: [
+    ParentRoute,
+    OnHome,
+    RouteList,
+    ClickAway,
+    ToggleMenu,
+    Auth,
+    WatchAuthModal
+  ],
   data() {
     return {
       routes: [],
-      isActive: false
+      title: APP_TITLE
+    }
+  },
+  computed: {
+    filterRoutes: function() {
+      return this.routes.filter(function(route) {
+        if (route.name !== 'Login') {
+          return route
+        }
+      })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+@import '../../assets/css/custom_animate';
 // Vue Transition Styles
 .smooth-enter-active, .smooth-leave-active {
-  transition: all 0.25s;
+  transition: all 0.45s;
   max-height: 175px;
 }
 .smooth-enter, .smooth-leave-to {
-  max-height: 0px;
-  padding: 0px;
+  max-height: 0;
+  padding-bottom: 0;
+  padding-top: 0;
   opacity: 0;
 }
-
-// Animate CSS customizations
-.fadeInDown {
-  -webkit-animation-name: fadeInDown;
-  animation-name: fadeInDown;
-}
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -5%, 0);
-    transform: translate3d(0, -10%, 0);
-  }
-  to {
-    opacity: 1;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
+.smooth-enter-to {
+  padding: 3rem 1.5rem;
 }
 
-.fadeOutUp {
-  -webkit-animation-name: fadeOutUp;
-  animation-name: fadeOutUp;
-}
-@keyframes fadeOutUp {
-  from {
-    opacity: 1;
-    -webkit-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    opacity: 0;
-    -webkit-transform: translate3d(0, -5%, 0);
-    transform: translate3d(0, -10%, 0);
-  }
-}
 // Custom Hero Styling
 .hero.is-info.is-bold {
   background-image:
@@ -167,7 +190,6 @@ export default {
 .navbar-item.is-mega {
   transition: all 0.25s;
   position: static;
-  margin-bottom: -43px;
   max-width: 285px;
   z-index: 2;
   .is-active {
@@ -200,13 +222,23 @@ export default {
   transition: all 0.25s;
 }
 
-.hero-foot {
-  margin-top: 13px;
-}
 .navbar-item.is-mega.rotate .navbar-link::after {
   -webkit-transform: rotate(135deg);
   transform: rotate(135deg);
   margin-top: -0.1rem;
+}
+
+// Logout button
+.logout {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0.8rem 1rem;
+  z-index: 5;
+  .button {
+    height: 25px;
+    font-size: 0.8rem;
+  }
 }
 
 // Media customizations
@@ -214,6 +246,7 @@ export default {
   .navbar-item.is-mega {
     max-width: initial;
     margin-bottom: 0;
+    font-size: 0.9rem;
   }
   .navbar-link::after {
     border: 1px solid #3273dc;
@@ -232,6 +265,17 @@ export default {
     margin-top: -0.3em;
     margin-left: 0.9rem;
     top: 50%;
+  }
+  .logout {
+    padding: 0.65rem 1rem;
+  }
+}
+
+// For bigger screens
+@media screen and (min-width: 2160px) {
+  .container {
+    max-width: 2000px;
+    width: 2000px;
   }
 }
 </style>

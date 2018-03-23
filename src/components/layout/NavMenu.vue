@@ -1,7 +1,7 @@
 <template>
   <div class="navbar-dropdown">
     <div class="container is-fluid">
-      <app-menu-contents
+      <app-menu-content
         v-for="route in routes"
         v-if="route.name == parent_route"
         :key="route.name"
@@ -9,7 +9,11 @@
         <!-- Main menu slot -->
         <div slot="main-menu" class="column">
           <h1 class="title is-6 is-mega-menu-title">{{ route.name }} Main</h1>
-          <router-link class="navbar-item" :to="route" exact>
+          <router-link
+            @click.native="toggleMenu"
+            class="navbar-item"
+            :to="route"
+          exact>
             <div class="navbar-content">
               <p class="has-text-info">{{ route.meta.section }}</p>
               <small>{{ route.meta.info }}</small>
@@ -27,6 +31,7 @@
             v-for="item in section.children"
             :to="item"
             :key="item.name"
+            @click.native="toggleMenu"
           exact>
             <div class="navbar-content">
               <p class="has-text-info">{{ item.name }}</p>
@@ -35,20 +40,22 @@
           </router-link>
         </div>
 
-      </app-menu-contents>
+      </app-menu-content>
     </div>
   </div>
 
 </template>
 
 <script>
-import MenuContents from '@/components/views/MenuContents'
+import MenuContent from '@/components/views/navmenu/MenuContent'
 import ParentRoute from '@/mixins/parentRoute'
+import ToggleMenu from '@/mixins/toggleMenu'
 export default {
   props: ['parent_route', 'routes'],
   components: {
-    'app-menu-contents': MenuContents
-  }
+    'app-menu-content': MenuContent,
+  },
+  mixins: [ToggleMenu]
 }
 </script>
 

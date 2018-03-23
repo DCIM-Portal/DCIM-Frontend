@@ -1,13 +1,15 @@
 <template>
-<div>I AM HOME</div>
+  <div>I AM HOME</div>
 </template>
 
 <script>
+
 export default {
   data () {
     return {
     }
   }
+
 }
 </script>
 

@@ -1,4 +1,5 @@
 import fontawesome from '@fortawesome/fontawesome'
+fontawesome.config.observeMutations = false
 
 import faSignOutAlt from '@fortawesome/fontawesome-free-solid/faSignOutAlt'
 fontawesome.library.add(faSignOutAlt)

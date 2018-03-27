@@ -119,7 +119,8 @@ export default [
           {
             path: 'bmc_hosts', name: 'BMC Hosts', component: BmcHosts,
             meta: {
-              info: 'View and manage BMC hosts'
+              info: 'View and manage BMC hosts',
+              apiPath: 'bmc_hosts'
             }
           }
         ]

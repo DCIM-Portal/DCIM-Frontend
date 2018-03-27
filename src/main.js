@@ -7,6 +7,7 @@ import '@/common/vuex-router-sync'
 import '@/common/buefy'
 import '@/common/font-awesome'
 import '@/common/vue-progressbar'
+import '@/common/i18n'
 
 // Import app and vuex store
 import App from './App'

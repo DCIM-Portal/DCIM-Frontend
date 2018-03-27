@@ -9,7 +9,7 @@
             hoverable
             mobile-cards
             narrowed
-            :table_type="table_type"
+            :table-type="tableType"
             :rows="data"
             :columns="columns"
             :loading="loading"
@@ -68,7 +68,7 @@
   export default {
     data () {
       return {
-        table_type: 'bmc_hosts',
+        tableType: 'bmc_hosts',
         data: [],
         columns: [
           'id',

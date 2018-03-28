@@ -6,10 +6,10 @@
         :class="tableClasses">
         <thead>
         <th class="checkbox-cell" v-if="checkable">
-          <!-- <b-checkbox v-model="allChecked"/> -->
+          <!--<b-checkbox v-model="allChecked"/>-->
           <label class="b-checkbox checkbox">
-            <input type="checkbox" v-model="allChecked"/>
-            <span class="check"/>
+          <input type="checkbox" v-model="allChecked"/>
+          <span class="check"/>
           </label>
         </th>
         <th v-for="column in columns" v-html="$t('tables.'+tableType+'.'+column, $t('tables.application.'+column, column))"></th>
@@ -19,7 +19,7 @@
           <td class="checkbox-cell" v-if="checkable">
             <!-- <b-checkbox :value="selected[row.id]" @change.native="toggleChecked(row.id)"/> -->
             <label class="b-checkbox checkbox">
-            <input type="checkbox" v-model="selected[row.id]" @click="toggleChecked(row.id)" :value="row.id" :key="row.id">
+            <input type="checkbox" v-model="selected[row.id]" :value="row.id" :key="row.id">
               <span class="check" />
             </label>
           </td>
@@ -32,13 +32,14 @@
 </template>
 
 <script>
-//import { Checkbox as BCheckbox } from 'buefy/src/components/checkbox'
+// import { Checkbox as BCheckbox } from 'buefy/src/components/checkbox'
 export default {
   name: "ApplicationTable",
   data() {
     return {
       //selected: [...this.checkedRows]
-      selected: {}
+      selected: {},
+      isAllChecked: false
     }
   },
   // components: {
@@ -80,7 +81,7 @@ export default {
     //   console.log(this.selected)
     // },
     toggleAllChecked() {
-      var value = this.isAllChecked() ? false : true
+      let value = !this.isAllChecked();
       this.rows.forEach((row) =>
         this.selected[row.id] = value
       )
@@ -90,11 +91,7 @@ export default {
     //   console.log('isChecked')
     // },
     toggleChecked(rowId) {
-      if (this.selected[rowId] !== false) {
-        this.selected[rowId] = false
-      } else {
-        this.selected[rowId] = true
-      }
+      this.selected[rowId] = this.selected[rowId] === false;
       console.log(this.selected)
     }
   },
@@ -141,18 +138,24 @@ export default {
     // },
     allChecked: {
       get() {
-        !Object.values(this.selected).some((value) =>
-          false
+        console.log('allChecked.get')
+        if (this.rows.length === 0) return false;
+        this.rows.forEach((row) => {
+            if (this.selected[row.id] === false) {
+              return false
+            }
+          }
         )
+        return this.isAllChecked
       },
       set(value) {
-        value = value ? true : false
+        value = !!value
         this.rows.forEach((row) =>
           this.selected[row.id] = value
         )
-          console.log('set: All Checked')
+        this.isAllChecked = value
+        console.log('allChecked.set')
       }
-
     },
     // selectAll: {
     //   get: function () {

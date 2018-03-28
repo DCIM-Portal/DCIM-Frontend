@@ -95,7 +95,8 @@ export default [
           {
             path: 'zones', name: 'Zones', component: Zones,
             meta:  {
-              info: 'Create and manage datacenter zones'
+              info: 'Create and manage datacenter zones',
+              apiPath: 'zones'
             }
           },
           {

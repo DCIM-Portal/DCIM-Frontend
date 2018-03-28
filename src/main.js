@@ -5,7 +5,7 @@ import ApiService from '@/common/api.service'
 import { router } from '@/common/vue-router'
 import '@/common/vuex-router-sync'
 import '@/common/buefy'
-import '@/common/font-awesome'
+import '@/common/material-icons'
 import '@/common/vue-progressbar'
 import '@/common/i18n'
 

@@ -3,7 +3,7 @@ import { router } from '@/common/vue-router'
 
 const state = {
   authenticated: false,
-  loginModal: false
+  loginModal: false,
 }
 
 const getters = {

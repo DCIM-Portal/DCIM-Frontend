@@ -9,7 +9,7 @@
       v-if="auth">
       <a class="button is-danger">
         <span class="icon">
-          <i class="fas fa-sign-out-alt"></i>
+          <lock-close/>
         </span>
         <span>Sign Out</span>
       </a>
@@ -96,7 +96,7 @@
 <script>
 import NavMenu from '@/components/layout/NavMenu'
 import LoginModal from '@/components/views/auth/LoginModal'
-import { ParentRoute, RouteList, ToggleMenu, OnHome, Auth, WatchAuthModal } from '@/mixins'
+import { ParentRoute, RouteList, ToggleMenu, OnHome, Auth } from '@/mixins'
 import { mixin as ClickAway } from 'vue-clickaway';
 import { APP_TITLE } from '@/common/config'
 export default {
@@ -123,8 +123,7 @@ export default {
     RouteList,
     ClickAway,
     ToggleMenu,
-    Auth,
-    WatchAuthModal
+    Auth
   ],
   data() {
     return {

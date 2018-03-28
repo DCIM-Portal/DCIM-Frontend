@@ -8,7 +8,7 @@ const translations = {
         serial: 'Serial'
       },
       bmc_hosts: {
-        brand: 'Brand (overridden)'
+        updated_at: 'Sync Time'
       }
     }
   }

@@ -6,7 +6,7 @@
       @click.prevent="triggerModal">
       <a class="button is-success">
         <span class="icon">
-          <i class="fas fa-sign-in-alt"></i>
+          <lock-open/>
         </span>
         <span>Sign In</span>
       </a>

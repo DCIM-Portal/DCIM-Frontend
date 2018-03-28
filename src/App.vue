@@ -24,11 +24,9 @@ export default {
 .animated {
   animation-duration: 0.55s;
 }
-
 // Bulma and Buefy
 @import "~bulma";
 @import "~buefy/src/scss/buefy";
-
 // Set customized html standard
 html {
   background-color: #f5f5f5;

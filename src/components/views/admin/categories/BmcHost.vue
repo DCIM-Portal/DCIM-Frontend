@@ -60,6 +60,7 @@
             </template>
           </b-table>
         </article></div></div>
+
   </section>
 </template>
 <script>
@@ -74,7 +75,8 @@
           'id',
           'brand',
           'product',
-          'serial'
+          'serial',
+          'updated_at'
         ],
         total: '',
         loading: false,
@@ -83,7 +85,7 @@
         defaultSortOrder: 'desc',
         page: 1,
         perPage: 10,
-        checkedRows: []
+        checkedRows: {}
       }
     },
     components: {

@@ -39,7 +39,7 @@ export default {
     return {
       //selected: [...this.checkedRows]
       selected: {},
-      isAllChecked: false
+      boolAllChecked: false
     }
   },
   // components: {
@@ -74,12 +74,24 @@ export default {
     },
   },
   methods: {
-    // isAllChecked() {
-    //   !Object.values(this.selected).some((value) =>
-    //     false
-    //   )
-    //   console.log(this.selected)
-    // },
+    isAllChecked() {
+      if (this.rows.length === 0) {
+        return false;
+      }
+      let bool = true
+      this.rows.forEach((row) => {
+          if (this.selected[row.id] === false) {
+            bool = false
+            return
+          }
+        }
+      )
+      // !Object.values(this.selected).some((value) =>
+      //   false
+      // )
+      console.log(this.selected)
+      return bool
+    },
     toggleAllChecked() {
       let value = !this.isAllChecked();
       this.rows.forEach((row) =>
@@ -100,6 +112,12 @@ export default {
       value.forEach((row) =>
         this.$set(this.selected, row.id, false)
       )
+    },
+    selected: {
+      handler(value) {
+        this.boolAllChecked = this.isAllChecked()
+      },
+      deep: true
     }
   },
   // mounted() {
@@ -139,21 +157,15 @@ export default {
     allChecked: {
       get() {
         console.log('allChecked.get')
-        if (this.rows.length === 0) return false;
-        this.rows.forEach((row) => {
-            if (this.selected[row.id] === false) {
-              return false
-            }
-          }
-        )
-        return this.isAllChecked
+        this.isAllChecked()
+        return this.boolAllChecked
       },
       set(value) {
         value = !!value
         this.rows.forEach((row) =>
           this.selected[row.id] = value
         )
-        this.isAllChecked = value
+        this.boolAllChecked = value
         console.log('allChecked.set')
       }
     },

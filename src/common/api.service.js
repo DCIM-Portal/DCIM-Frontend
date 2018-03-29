@@ -12,11 +12,14 @@ const ApiService = {
     Vue.axios.defaults.headers.common['Authorization'] = 'Bearer ' + token
     console.log(Vue.axios.defaults.headers.common['Authorization'])
   },
-  post (resource, params) {
-    return Vue.axios.post(`${resource}`, params)
+  post (resource, params, options) {
+    return Vue.axios.post(`${resource}`, params, options)
   },
-  get (resource) {
-    return Vue.axios.get(`${resource}`)
+  get (resource, options) {
+    return Vue.axios.get(`${resource}`, options)
+  },
+  cancelToken () {
+    return Vue.axios.CancelToken.source()
   }
 }
 

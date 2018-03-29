@@ -15,7 +15,7 @@
             :loading="loading"
             paginated
             backend-pagination
-            :total="total"
+            :pages-count="pagesCount"
             :per-page="perPage"
             @page-change="onPageChange"
             :checked-rows.sync="checkedRows"
@@ -40,7 +40,7 @@
           'serial',
           'updated_at'
         ],
-        total: '',
+        pagesCount: '',
         loading: false,
         sortField: 'vote_count',
         sortOrder: 'desc',
@@ -57,7 +57,7 @@
       fetchCollection() {
         const params = [
           `?page=${this.page}`,
-          `per_page=4000`
+          `per_page=10`
         ].join('&')
         this.loading = true
         ApiService
@@ -66,7 +66,7 @@
             console.log(res)
             const table = res.data.pagination
             this.data = res.data.data
-            this.total = table.pages_count
+            this.pagesCount = table.pages_count
             this.page = table.current_page_number
             this.perPage = table.records_per_page
             this.loading = false

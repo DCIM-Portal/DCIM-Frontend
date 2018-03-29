@@ -26,6 +26,23 @@
         </tbody>
       </table>
     </div>
+    <div v-if="checkable || paginated" class="level">
+      <div class="level-left">
+        <slot name="bottom-left"/>
+      </div>
+
+      <div class="level-right">
+        <div v-if="paginated" class="level-item">
+          <b-pagination
+            :total="pagesCount"
+            :per-page="perPage"
+            :simple="paginationSimple"
+            :size="paginationSize"
+            :current="localCurrentPage"
+            @change="pageChanged"/>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -35,7 +52,9 @@ export default {
   data() {
     return {
       selected: {},
-      boolAllChecked: false
+      boolAllChecked: false,
+      localCurrentPage: this.currentPage,
+      localPagesCount: this.pagesCount
     }
   },
   props: {
@@ -57,6 +76,21 @@ export default {
     striped: Boolean,
     narrowed: Boolean,
     hoverable: Boolean,
+    paginated: Boolean,
+    paginationSize: String,
+    paginationSimple: Boolean,
+    currentPage: {
+      type: Number,
+      default: 1
+    },
+    pagesCount: {
+      type: [Number, String],
+      default: 0
+    },
+    perPage: {
+      type: [Number, String],
+      default: 20
+    },
     mobileCards: {
       type: Boolean,
       default: true
@@ -76,11 +110,17 @@ export default {
         }
       )
       return bool
+    },
+    pageChanged(page) {
+      this.localCurrentPage = page > 0 ? page : 1
+      this.$emit('page-change', this.localCurrentPage)
+      this.$emit('update:currentPage', this.localCurrentPage)
     }
   },
   watch: {
     rows(value) {
       value.forEach((row) =>
+        // TODO: Preserve selected rows on new data and page changes
         this.$set(this.selected, row.id, false)
       )
     },
@@ -89,6 +129,9 @@ export default {
         this.boolAllChecked = this.isAllChecked()
       },
       deep: true
+    },
+    currentPage(newValue) {
+      this.localCurrentPage = newValue
     }
   },
   computed: {

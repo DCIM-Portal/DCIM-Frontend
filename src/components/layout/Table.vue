@@ -83,7 +83,7 @@ export default {
   data () {
     return {
       data: [],
-      total: '',
+      pagesCount: '',
       loading: false,
       page: 1,
       perPage: 10,

@@ -85,7 +85,7 @@ export default {
       data: [],
       pagesCount: '',
       loading: false,
-      page: 1,
+      currentPage: 1,
       perPage: 10,
       checkedRows: []
     }
@@ -93,7 +93,7 @@ export default {
   methods: {
     fetchCollection() {
       const params = [
-        `?page=${this.page}`,
+        `?page=${this.currentPage}`,
         `per_page=${this.perPage}`
       ].join('&')
       this.loading = true

@@ -12,6 +12,7 @@
             :table-type="tableType"
             :rows="data"
             :columns="columns"
+            :records-count="recordsCount"
             :loading="loading"
             paginated
             backend-pagination
@@ -41,11 +42,12 @@
           'updated_at'
         ],
         pagesCount: '',
+        recordsCount: undefined,
         loading: false,
         sortField: 'vote_count',
         sortOrder: 'desc',
         defaultSortOrder: 'desc',
-        page: 1,
+        currentPage: 1,
         perPage: 10,
         checkedRows: {}
       }
@@ -56,7 +58,7 @@
     methods: {
       fetchCollection() {
         const params = [
-          `?page=${this.page}`,
+          `?page=${this.currentPage}`,
           `per_page=10`
         ].join('&')
         this.loading = true
@@ -67,8 +69,9 @@
             const table = res.data.pagination
             this.data = res.data.data
             this.pagesCount = table.pages_count
-            this.page = table.current_page_number
+            this.currentPage = table.current_page_number
             this.perPage = table.records_per_page
+            this.recordsCount = table.records_count
             this.loading = false
           })
           .catch(error => {
@@ -76,7 +79,7 @@
           })
       },
       onPageChange(page) {
-        this.page = page
+        this.currentPage = page
         this.fetchCollection()
       },
     },

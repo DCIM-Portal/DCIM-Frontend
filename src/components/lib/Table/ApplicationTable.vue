@@ -29,15 +29,16 @@
     <div v-if="checkable || paginated" class="level">
       <div class="level-left">
         <slot name="bottom-left"/>
-        <span v-if="isAnyChecked">
+        Showing {{ perPage * (localCurrentPage - 1) + 1 }} to {{ Math.min(localCurrentPage*perPage, recordsCount) }} of {{ recordsCount }}
+        <div v-if="isAnyChecked">
           ({{ countChecked }} selected)
-        </span>
+        </div>
       </div>
 
       <div class="level-right">
         <div v-if="paginated" class="level-item">
           <b-pagination
-            :total="pagesCount"
+            :total="recordsCount"
             :per-page="perPage"
             :simple="paginationSimple"
             :size="paginationSize"
@@ -93,6 +94,10 @@ export default {
     perPage: {
       type: [Number, String],
       default: 20
+    },
+    recordsCount: {
+      type: [Number, String],
+      default: undefined
     },
     mobileCards: {
       type: Boolean,

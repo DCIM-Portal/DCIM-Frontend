@@ -29,6 +29,9 @@
     <div v-if="checkable || paginated" class="level">
       <div class="level-left">
         <slot name="bottom-left"/>
+        <span v-if="isAnyChecked">
+          ({{ countChecked }} selected)
+        </span>
       </div>
 
       <div class="level-right">
@@ -119,10 +122,12 @@ export default {
   },
   watch: {
     rows(value) {
-      value.forEach((row) =>
-        // TODO: Preserve selected rows on new data and page changes
-        this.$set(this.selected, row.id, false)
+      value.forEach((row) => {
+          if (this.selected[row.id] === undefined)
+            this.$set(this.selected, row.id, false)
+        }
       )
+      this.boolAllChecked = this.isAllChecked()
     },
     selected: {
       handler(value) {
@@ -159,6 +164,14 @@ export default {
         )
         this.boolAllChecked = value
       }
+    },
+    isAnyChecked() {
+      return Object.values(this.selected).some((value) => value === true)
+    },
+    countChecked() {
+      return Object.values(this.selected).reduce((accumulator, value) => {
+        return accumulator + (value === true)
+      }, 0)
     }
   }
 }

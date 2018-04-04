@@ -3,6 +3,9 @@
     <app-hero></app-hero>
     <app-main></app-main>
     <vue-progress-bar></vue-progress-bar>
+    <back-to-top bottom="25px" right="10px">
+      <a class="button"><chevron-up/></a>
+    </back-to-top>
   </div>
 </template>
 
@@ -31,5 +34,18 @@ export default {
 html {
   background-color: #f5f5f5;
   overflow-y: auto;
+}
+.vue-back-to-top {
+  a.button {
+    height: 40px;
+    padding: 0rem 0.2rem;
+    color: white;
+    background: rgba(61, 96, 117, 0.85);
+    span.material-design-icon {
+      width: 1.2em;
+      height: 0.9em;
+      font-size: 1.5em;
+    }
+  }
 }
 </style>

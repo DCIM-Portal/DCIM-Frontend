@@ -1,6 +1,6 @@
 <template>
 <div>
-  <p>I AM Assets page</p>
+  <p v-if="this.$route.name == 'Assets'">I AM Assets page</p>
   <transition
     mode="out-in"
     enter-active-class="fadeIn"

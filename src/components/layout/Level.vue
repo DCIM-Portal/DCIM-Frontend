@@ -3,7 +3,7 @@
     <div class="level-left">
       <div class="level-item">
         <h3 class="subtitle is-5">
-          <strong>{{ name }}</strong>
+          {{ name }}
         </h3>
       </div>
     </div>
@@ -54,7 +54,11 @@ export default {
 </script>
 
 <style lang="scss">
-.breadcrumb a {
-  padding: 0;
+.breadcrumb {
+  font-size: 0.8rem;
+  font-weight: 300;
+  a {
+    padding: 0;
+  }
 }
 </style>

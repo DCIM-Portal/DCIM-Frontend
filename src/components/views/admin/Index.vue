@@ -1,6 +1,6 @@
 <template>
   <div>
-    I AM Admin
+    <div v-if="this.$route.name == 'Admin'">I am Admin</div>
     <transition
       mode="out-in"
       enter-active-class="fadeIn"

@@ -12,5 +12,15 @@ Vue.component('lock-close', LockClose)
 // Chevrons
 import ChevronLeft from 'vue-material-design-icons/chevron-left'
 import ChevronRight from 'vue-material-design-icons/chevron-right'
+import ChevronUp from 'vue-material-design-icons/chevron-up'
 Vue.component('chevron-left', ChevronLeft)
 Vue.component('chevron-right', ChevronRight)
+Vue.component('chevron-up', ChevronUp)
+
+// Power
+import Power from 'vue-material-design-icons/power'
+Vue.component('power', Power)
+
+// Magnify
+import Magnify from 'vue-material-design-icons/magnify'
+Vue.component('magnify', Magnify)

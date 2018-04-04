@@ -32,8 +32,4 @@ export default {
   height: 1.2em;
   width: 1.2em;
 }
-.b-checkbox.checkbox input[type=checkbox] + .check {
-  width: 1.05em;
-  height: 1.05em;
-}
 </style>

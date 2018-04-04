@@ -8,6 +8,7 @@ import '@/common/buefy'
 import '@/common/material-icons'
 import '@/common/vue-progressbar'
 import '@/common/i18n'
+import '@/common/vue-backtotop'
 
 // Import app and vuex store
 import App from './App'

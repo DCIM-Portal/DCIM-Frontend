@@ -11,25 +11,56 @@
           <span class="check"/>
           </label>
         </th>
-        <th v-for="column in columns" v-html="$t('tables.'+tableType+'.'+column, $t('tables.application.'+column, column))"></th>
+        <th v-for="column in columns"
+          v-html="$t('tables.'+tableType+'.'+column,
+          $t('tables.application.'+column, column))"
+          :class="{
+            'sort-column': column == isCurrentSort,
+            'rotate': (isAsc && column == isCurrentSort)
+            }"
+          @click.stop="sort(column)">
+        </th>
         </thead>
         <tbody>
-        <tr v-for="row in rows" :key="row.id">
-          <td class="checkbox-cell" v-if="checkable">
-            <label class="b-checkbox checkbox">
-            <input type="checkbox" v-model="selected[row.id]" :value="row.id" :key="row.id">
+          <tr v-for="row in rows" :key="row.id">
+            <td class="checkbox-cell" v-if="checkable">
+              <label class="b-checkbox checkbox">
+              <input type="checkbox"
+                v-model="selected[row.id]"
+                :value="row.id"
+                :key="row.id">
               <span class="check" />
-            </label>
-          </td>
-          <td v-for="column in columns" v-html="row[column]"/>
-        </tr>
+              </label>
+            </td>
+            <td v-for="column in columns">
+              <b-tag
+                v-if="row[column] == 'on'"
+                class="power"
+                type="is-success">
+                <power/>
+                On
+              </b-tag>
+              <b-tag
+                v-else-if="row[column] == 'off'"
+                class="power"
+                type="is-danger">
+                <power/>
+                Off
+              </b-tag>
+              <div v-else-if="row[column] == null">N/A</div>
+              <div v-else v-html="row[column]"/>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
+
     <div v-if="checkable || paginated" class="level">
       <div class="level-left">
-        <slot name="bottom-left"/>
-        Showing {{ perPage * (localCurrentPage - 1) + 1 }} to {{ Math.min(localCurrentPage*perPage, recordsCount) }} of {{ recordsCount }}
+        Showing {{ perPage * (localCurrentPage - 1) + 1 }} to
+        {{ Math.min(localCurrentPage*perPage, recordsCount) }}
+        of {{ recordsCount }}
+        <br/>
         <div v-if="isAnyChecked">
           ({{ countChecked }} selected)
         </div>
@@ -58,7 +89,9 @@ export default {
       selected: {},
       boolAllChecked: false,
       localCurrentPage: this.currentPage,
-      localPagesCount: this.pagesCount
+      localPagesCount: this.pagesCount,
+      localSortOrder: this.sortOrder,
+      localSortField: this.sortField
     }
   },
   props: {
@@ -103,6 +136,8 @@ export default {
       type: Boolean,
       default: true
     },
+    sortField: String,
+    sortOrder: String
   },
   methods: {
     isAllChecked() {
@@ -123,15 +158,25 @@ export default {
       this.localCurrentPage = page > 0 ? page : 1
       this.$emit('page-change', this.localCurrentPage)
       this.$emit('update:currentPage', this.localCurrentPage)
+    },
+    sort(column) {
+      if (column == this.localSortField) {
+        this.localSortOrder = (this.localSortOrder === 'desc') ? 'asc' : 'desc'
+        this.$emit('update:sortOrder', this.localSortOrder)
+      } else {
+        this.localSortField = column
+        this.localSortOrder = 'desc'
+        this.$emit('update:sortOrder', this.localSortOrder)
+        this.$emit('update:sortField', this.localSortField)
+      }
     }
   },
   watch: {
     rows(value) {
       value.forEach((row) => {
-          if (this.selected[row.id] === undefined)
-            this.$set(this.selected, row.id, false)
-        }
-      )
+        if (this.selected[row.id] === undefined)
+          this.$set(this.selected, row.id, false)
+      })
       this.boolAllChecked = this.isAllChecked()
     },
     selected: {
@@ -177,11 +222,94 @@ export default {
       return Object.values(this.selected).reduce((accumulator, value) => {
         return accumulator + (value === true)
       }, 0)
+    },
+    isCurrentSort() {
+      return this.localSortField
+    },
+    isAsc() {
+      return this.localSortOrder == 'asc'
     }
   }
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+div.b-table {
+  table.table {
+    font-size: 0.9rem;
+    font-weight: 300;
+    background: transparent;
+    thead {
+      background-image: linear-gradient(140deg, #243b42 50%, #456c86 100%);
+      th {
+        font-weight: 400;
+        color: white;
+        border-bottom: none;
+        transition: all 0.25s;
+      }
+      th.sort-column {
+        padding-left: 1.5em;
+        background: #ffffff36;
+      }
+      th.sort-column::after {
+        border: 1px solid white;
+        border-right: 0;
+        border-top: 0;
+        content: " ";
+        display: block;
+        height: 0.5em;
+        width: 0.5em;
+        -webkit-transform: rotate(-45deg);
+        transform: rotate(-45deg);
+        -webkit-transform-origin: center;
+        transform-origin: center;
+        margin-top: -15px;
+        margin-left: -12px;
+        transition: all 0.25s;
+      }
+      th.sort-column.rotate::after {
+        -webkit-transform: rotate(135deg);
+        transform: rotate(135deg);
+        margin-top: -0.6rem;
+      }
+      th.checkbox-cell {
+        span.check {
+          border: 2px solid #ffffff;
+        }
+      }
+    }
+  }
+  table.table.is-striped {
+    tbody {
+      tr:not(.is-selected):nth-child(odd) {
+        background-color: white;
+      }
+      tr:not(.is-selected):hover {
+        background-color: whitesmoke;
+      }
+    }
+  }
+}
+.b-checkbox.checkbox input[type=checkbox]:checked + .check {
+  border-color: #00d1b2;
+}
+.b-checkbox.checkbox input[type=checkbox] + .check {
+  width: 1.05em;
+  height: 1.05em;
+}
+.b-table .table .checkbox-cell .checkbox {
+  vertical-align: initial;
+}
+.level-left {
+  font-size: 0.9rem;
+}
+.pagination {
+  font-size: 0.8rem;
+}
+.power {
+  min-width: 52px;
+  span.power-icon {
+    margin-right: 3px;
+  }
+}
 </style>

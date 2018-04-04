@@ -1,121 +1,208 @@
 <template>
   <section>
-    <div class="tile is-ancestor">
-      <div class="tile is-parent">
-        <article class="tile is-child">
-          <p class="title">Table</p>
+    <!-- Table Controls -->
+    <b-field
+    group-multiline
+    class="table-level"
+    >
+      <!-- Per Page -->
+      <b-field :type="perPageFieldType">
+        <div class="control is-flex">
+          <label class="label">Per Page</label>
+          <b-autocomplete
+            v-model="localPerPage"
+            :data="perPageOptions"
+            :placeholder="perPage"
+            type="number"
+            @input="generatePerPageSuggestions"
+            />
+        </div>
+      </b-field>
+      <!-- Mobile Sort -->
+      <!-- <b-select placeholder="Select a column">
+        <option
+          v-for="column in columns"
+          :value="column"
+          :key="column">
+          {{ $t('tables.'+tableType+'.'+column,
+          $t('tables.application.'+column, column)) }}
+        </option>
+      </b-select>
+      <p class="control">
+        <button class="button is-success"></button>
+      </p> -->
+      <!-- Search -->
+      <div class="control is-absolute-right">
+        <b-input
+          v-model="localSearchQuery"
+          placeholder="Search..."
+          type="search"
+          />
+      </div>
 
-          <b-select v-model="perPage">
-            <option value="10">10 per page</option>
-            <option value="25">25 per page</option>
-            <option value="50">50 per page</option>
-            <option value="100">100 per page</option>
-            <option value="250">250 per page</option>
-          </b-select>
+    </b-field>
 
-
+    <!-- Table -->
     <b-table
       striped
       hoverable
       mobile-cards
-      narrowed
-      :data="data"
+      :table-type="tableType"
+      :rows="data"
+      :columns="columns"
+      :records-count="recordsCount"
       :loading="loading"
       paginated
-      backend-pagination
-      :total="total"
+      :pages-count="pagesCount"
       :per-page="perPage"
       @page-change="onPageChange"
-      :checked-rows.sync="checkedRows"
-      checkable>
-      <template slot-scope="props">
-
-        <b-table-column v-if="props.row.id" field="id" label="ID">
-          {{ props.row.id }}
-        </b-table-column>
-        <b-table-column field="ip_address" label="IP Address">
-          {{ props.row.ip_address }}
-        </b-table-column>
-        <b-table-column field="brand" label="Brand">
-          {{ props.row.brand || "N/A"}}
-        </b-table-column>
-        <b-table-column field="product" label="Product" meta="Product">
-          {{ props.row.product || "N/A"}}
-        </b-table-column>
-        <b-table-column field="serial" label="Serial">
-          {{ props.row.serial || "N/A" }}
-        </b-table-column>
-        <b-table-column field="zone_id" label="Zone">
-          {{ props.row.zone_id || "N/A" }}
-        </b-table-column>
-        <b-table-column field="power_status" label="Power Status">
-          {{ props.row.power_status || "N/A" }}
-        </b-table-column>
-        <b-table-column field="sync_status" label="Sync Status">
-          {{ props.row.sync_status || "N/A" }}
-        </b-table-column>
-        <b-table-column field="onboard_status" label="Onboard Status">
-          {{ props.row.onboard_status || "N/A" }}
-        </b-table-column>
-        <b-table-column field="onboard_step" label="Onboard Step">
-          {{ props.row.onboard_step || "N/A" }}
-        </b-table-column>
-        <b-table-column field="updated_at" label="Sync Time">
-          {{ props.row.updated_at }}
-        </b-table-column>
-
-        <template slot="bottom-left">
-          <b>Total checked</b>: {{ checkedRows.length }}
-        </template>
-
-      </template>
-
-
-
-    </b-table>
-  </article></div></div>
+      :sortField.sync="sortField"
+      :sortOrder.sync="sortOrder"
+      checkable
+      />
   </section>
 </template>
 
 <script>
 import ApiService from '@/common/api.service'
+import ApplicationTable from '@/components/lib/Table/ApplicationTable'
+import debounce from 'lodash/debounce'
 export default {
+  components: {
+    'b-table': ApplicationTable
+  },
+  props: {
+    columns: {
+      type: Array,
+      default: () => []
+    },
+    tableType: {
+      type: String,
+      default: 'application'
+    },
+    orderField: {
+      type: String,
+      default: 'id'
+    },
+    orderDirection: {
+      type: String,
+      default: 'desc'
+    }
+  },
   data () {
     return {
       data: [],
       pagesCount: '',
+      recordsCount: undefined,
       loading: false,
       currentPage: 1,
       perPage: 10,
-      checkedRows: []
+      localPerPage: 10,
+      perPageOptions: [],
+      perPageFieldType: undefined,
+      searchQuery: '',
+      localSearchQuery: '',
+      checkedRows: {},
+      fetchCollectionCancelSource: ApiService.cancelToken(),
+      sortOrder: this.orderDirection,
+      sortField: this.orderField
+    }
+  },
+  computed: {
+    searchableFields() {
+      return this.columns.filter(item => item !== 'updated_at').join(",")
     }
   },
   methods: {
-    fetchCollection() {
+    fetchCollection: debounce(function() {
+      console.log(this.sortOrder)
       const params = [
         `?page=${this.currentPage}`,
-        `per_page=${this.perPage}`
+        `per_page=${this.perPage}`,
+        `search[fields]=${this.searchableFields}`,
+        `search[query]=${this.searchQuery}`,
+        `order[${this.sortField}]=${this.sortOrder}`
       ].join('&')
       this.loading = true
+      console.log(params)
+      this.fetchCollectionCancelSource = ApiService.cancelToken()
       ApiService
-        .get(this.$route.meta.apiPath + params)
-          .then(res => {
-            console.log(res)
-            const table = res.data.pagination
-            this.data = res.data.data
-            this.total = table.pages_count
-            this.page = table.current_page_number
-            this.perPage = table.records_per_page
-            this.loading = false
-          })
-          .catch(error => {
-            console.log(error)
-          })
-    },
+        .get(this.$route.meta.apiPath + params,
+          { cancelToken: this.fetchCollectionCancelSource.token })
+        .then(res => {
+          console.log(res)
+          const table = res.data.pagination
+          this.data = res.data.data
+          this.pagesCount = table.pages_count
+          this.currentPage = table.current_page_number
+          this.perPage = table.records_per_page
+          this.recordsCount = table.records_count
+          this.searchQuery = res.data.search.query
+          this.loading = false
+        })
+        .catch(error => {
+          console.log(error)
+        })
+      return params
+    }, 500, {leading: true}),
     onPageChange(page) {
-      this.page = page
+      this.currentPage = page
       this.fetchCollection()
     },
+    generatePerPageSuggestions() {
+      this.perPageOptions = [
+        "10",
+        "25",
+        "50",
+        "100",
+        "250",
+        "500",
+        "1000",
+        "2000",
+        "5000",
+        "10000"
+      ]
+    }
+  },
+  watch: {
+    perPage(newValue) {
+      // this.localPerPage = newValue
+    },
+    localPerPage(newValue) {
+      if (parseInt(newValue) > 0) {
+        this.perPage = newValue
+        this.fetchCollectionCancelSource.cancel(
+          'New per page requested before server response'
+        )
+        this.fetchCollection()
+        this.perPageFieldType = undefined
+      } else if (newValue.length === 0) {
+        this.perPageFieldType = undefined
+      } else {
+        this.perPageFieldType = 'is-danger'
+      }
+    },
+    localSearchQuery(newValue) {
+      this.searchQuery = newValue
+      this.fetchCollectionCancelSource.cancel(
+        'New per page requested before server response'
+      )
+      this.fetchCollection()
+    },
+    sortOrder(newValue) {
+      this.sortOrder = newValue
+      this.fetchCollectionCancelSource.cancel(
+        'New per page requested before server response'
+      )
+      this.fetchCollection()
+    },
+    sortField(newValue) {
+      this.sortField = newValue
+      this.fetchCollectionCancelSource.cancel(
+        'New per page requested before server response'
+      )
+      this.fetchCollection()
+    }
   },
   mounted() {
     this.fetchCollection()
@@ -124,5 +211,41 @@ export default {
 </script>
 
 <style lang="scss">
-
+div.table-level {
+  div.autocomplete.control {
+    .dropdown-menu {
+      min-width: 85px;
+      max-width: 85px;
+      a.dropdown-item {
+        font-size: 0.8rem;
+      }
+    }
+    input {
+      font-size: 0.8rem;
+      max-width: 75px;
+    }
+  }
+  div.control {
+    .label {
+      font-weight: 300;
+      font-size: 0.8rem;
+      align-self: center;
+      margin-right: 0.2rem;
+    }
+    input {
+      max-width: 120px;
+      font-size: 0.8rem;
+    }
+  }
+}
+.pagination-list {
+  a.pagination-link.is-current {
+    background-color: #3d6075;
+    border-color: #3d6075;
+  }
+}
+.is-absolute-right {
+  position: absolute;
+  right: 0;
+}
 </style>

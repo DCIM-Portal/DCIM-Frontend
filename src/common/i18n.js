@@ -3,18 +3,23 @@ const translations = {
     tables: {
       application: {
         id: 'ID',
+        ip_address: 'IP Address',
         brand: 'Brand',
         product: 'Product',
-        serial: 'Serial'
+        serial: 'Serial',
+        zone_id: 'Zone ID',
+        power_status: 'Power Status',
+        sync_status: 'Sync Status',
+        onboard_status: 'Onboard Status',
+        onboard_step: 'Onboard Step'
       },
       bmc_hosts: {
-        updated_at: 'Sync Time'
+        ip_address: 'BMC Address',
+        updated_at: 'Sync Time',
       }
     }
   }
 }
-
-//
 
 import Vue from 'vue'
 import vuexI18n from 'vuex-i18n'

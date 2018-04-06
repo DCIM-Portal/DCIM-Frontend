@@ -4,16 +4,8 @@
     <!-- Login Modal -->
     <app-login-modal v-if="!auth"/>
 
-    <!-- Logout button -->
-    <span class="navbar-item logout" @click.prevent="logout"
-      v-if="auth">
-      <a class="button is-danger">
-        <span class="icon">
-          <lock-close/>
-        </span>
-        <span>Sign Out</span>
-      </a>
-    </span>
+    <!-- Logout Modal -->
+    <app-logout-modal v-if="auth"/>
 
     <!-- Hero Header -->
     <transition
@@ -77,7 +69,7 @@
           <ul>
 
             <!-- Parent Links -->
-            <router-link tag="li" v-for="route in filterRoutes"
+            <router-link tag="li" v-for="route in routes"
               :to="route"
               :key="route.name"
               :class="{'router-link-active': parentIsActive(route.name)}"
@@ -96,13 +88,15 @@
 <script>
 import NavMenu from '@/components/layout/NavMenu'
 import LoginModal from '@/components/views/auth/LoginModal'
+import LogoutModal from '@/components/views/auth/LogoutModal'
 import { ParentRoute, RouteList, ToggleMenu, OnHome, Auth } from '@/mixins'
 import { mixin as ClickAway } from 'vue-clickaway';
 import { APP_TITLE } from '@/common/config'
 export default {
   components: {
     'app-navmenu': NavMenu,
-    'app-login-modal': LoginModal
+    'app-login-modal': LoginModal,
+    'app-logout-modal': LogoutModal
   },
   methods: {
     parentIsActive(parent) {
@@ -112,9 +106,6 @@ export default {
       if (this.menuIsActive) {
         this.menuIsActive = false
       }
-    },
-    logout() {
-      this.$store.dispatch('logout');
     }
   },
   mixins: [
@@ -129,15 +120,6 @@ export default {
     return {
       routes: [],
       title: APP_TITLE
-    }
-  },
-  computed: {
-    filterRoutes: function() {
-      return this.routes.filter(function(route) {
-        if (route.name !== 'Login') {
-          return route
-        }
-      })
     }
   }
 }
@@ -159,14 +141,12 @@ export default {
 .smooth-enter-to {
   padding: 3rem 1.5rem;
 }
-
 // Custom Hero Styling
 .hero.is-info.is-bold {
   background-image:
     linear-gradient(140deg, #243b42 50%, #456c86 100%);
   position: relative;
 }
-
 // Custom Tabs Styling
 .hero.is-info {
   .tabs li.router-link-active {
@@ -184,13 +164,12 @@ export default {
     }
   }
 }
-
 // Mega Menu Styling
 .navbar-item.is-mega {
   transition: all 0.25s;
   position: static;
   max-width: 285px;
-  z-index: 2;
+  z-index: 5;
   .is-active {
     display: block;
   }
@@ -220,26 +199,11 @@ export default {
 .navbar-link::after {
   transition: all 0.25s;
 }
-
 .navbar-item.is-mega.rotate .navbar-link::after {
   -webkit-transform: rotate(135deg);
   transform: rotate(135deg);
   margin-top: -0.1rem;
 }
-
-// Logout button
-.logout {
-  position: absolute;
-  top: 0;
-  right: 0;
-  padding: 0.8rem 1rem;
-  z-index: 5;
-  .button {
-    height: 25px;
-    font-size: 0.8rem;
-  }
-}
-
 // Media customizations
 @media screen and (max-width: 1024px) {
   .navbar-item.is-mega {
@@ -265,11 +229,7 @@ export default {
     margin-left: 0.9rem;
     top: 50%;
   }
-  .logout {
-    padding: 0.65rem 1rem;
-  }
 }
-
 // For bigger screens
 @media screen and (min-width: 2160px) {
   .container {

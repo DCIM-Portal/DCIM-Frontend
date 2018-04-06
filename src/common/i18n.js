@@ -16,6 +16,11 @@ const translations = {
       bmc_hosts: {
         ip_address: 'BMC Address',
         updated_at: 'Sync Time',
+      },
+      zones: {
+        name: 'Zone Name',
+        foreman_location_id: 'Foreman Zone ID',
+        created_at: 'Date Added'
       }
     }
   }

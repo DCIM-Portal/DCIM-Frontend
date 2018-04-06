@@ -4,7 +4,11 @@
     <app-main></app-main>
     <vue-progress-bar></vue-progress-bar>
     <back-to-top bottom="25px" right="10px">
-      <a class="button"><chevron-up/></a>
+      <a class="button">
+        <span class="icon">
+          <i class="mdi mdi-24px mdi-chevron-double-up"></i>
+        </span>
+      </a>
     </back-to-top>
   </div>
 </template>
@@ -38,14 +42,10 @@ html {
 .vue-back-to-top {
   a.button {
     height: 40px;
+    width: 40px;
     padding: 0rem 0.2rem;
     color: white;
     background: rgba(61, 96, 117, 0.85);
-    span.material-design-icon {
-      width: 1.2em;
-      height: 0.9em;
-      font-size: 1.5em;
-    }
   }
 }
 </style>

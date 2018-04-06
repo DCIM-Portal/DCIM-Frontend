@@ -4,6 +4,7 @@ import ParentRoute from './parentRoute'
 import RouteList from './routeList'
 import ToggleMenu from './toggleMenu'
 import WatchAuthModal from './watchAuthModal'
+import TableCellRenderers from './tableCellRenderers'
 
 export {
   Auth,
@@ -11,5 +12,6 @@ export {
   ParentRoute,
   RouteList,
   ToggleMenu,
-  WatchAuthModal
+  WatchAuthModal,
+  TableCellRenderers
 }

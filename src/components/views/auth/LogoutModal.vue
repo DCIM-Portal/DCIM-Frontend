@@ -1,30 +1,30 @@
 <template>
   <section>
 
-    <!-- Login Button -->
-    <span class="navbar-item login"
+    <!-- Logout button -->
+    <span class="navbar-item logout"
       @click.prevent="triggerModal">
-      <a class="button is-success">
+      <a class="button is-danger">
         <span class="icon">
-         <i class="mdi mdi-18px mdi-login"></i>
+          <i class="mdi mdi-18px mdi-logout"></i>
         </span>
-        <span>Sign In</span>
+        <span>Sign Out</span>
       </a>
     </span>
 
     <!-- Modal content -->
     <b-modal :active.sync="modalActive" :width="420">
-      <login-modal-content/>
+      <logout-modal-content/>
     </b-modal>
 
   </section>
 </template>
 
 <script>
-import LoginModalContent from './modal/LoginModalContent'
+import LogoutModalContent from './modal/LogoutModalContent'
 export default {
   components: {
-    'login-modal-content': LoginModalContent
+    'logout-modal-content': LogoutModalContent
   },
   methods: {
     triggerModal () {
@@ -46,7 +46,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.login {
+// Logout button
+.logout {
   position: absolute;
   top: 0;
   right: 0;
@@ -59,7 +60,7 @@ export default {
 }
 
 @media screen and (max-width: 1024px) {
-  .login {
+  .logout {
     padding: 0.65rem 1rem;
   }
 }

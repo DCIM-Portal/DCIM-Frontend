@@ -28,8 +28,4 @@ export default {
 .app-main {
   padding-top: 1rem;
 }
-.material-design-icon > .material-design-icon__svg {
-  height: 1.2em;
-  width: 1.2em;
-}
 </style>

@@ -1,6 +1,3 @@
-// Login Route Component
-//import Login from '@/components/views/auth/modal/LoginModal'
-
 // Home Route Components
 import { Home } from '@/components/views/home'
 

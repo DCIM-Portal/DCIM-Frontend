@@ -37,6 +37,7 @@
           v-model="localSearchQuery"
           placeholder="Search..."
           type="search"
+          icon="magnify"
           />
       </div>
 
@@ -165,9 +166,6 @@ export default {
     }
   },
   watch: {
-    perPage(newValue) {
-      // this.localPerPage = newValue
-    },
     localPerPage(newValue) {
       if (parseInt(newValue) > 0) {
         this.perPage = newValue
@@ -225,6 +223,10 @@ div.table-level {
       max-width: 75px;
     }
   }
+  // div.control.has-icons-left .icon,
+  // div.control.has-icons-right .icon {
+  //   z-index: 1;
+  // }
   div.control {
     .label {
       font-weight: 300;
@@ -235,6 +237,9 @@ div.table-level {
     input {
       max-width: 120px;
       font-size: 0.8rem;
+    }
+    .mdi::before {
+      margin-bottom: 6px;
     }
   }
 }
@@ -247,5 +252,8 @@ div.table-level {
 .is-absolute-right {
   position: absolute;
   right: 0;
+}
+div.field:not(:last-child) {
+  margin-bottom: 0.25rem;
 }
 </style>

@@ -12,11 +12,14 @@
           </label>
         </th>
         <th v-for="column in columns"
+          :data-label="$t('tables.'+tableType+'.'+column,
+          $t('tables.application.'+column, column))"
           v-html="$t('tables.'+tableType+'.'+column,
           $t('tables.application.'+column, column))"
           :class="{
-            'sort-column': column == isCurrentSort,
-            'rotate': (isAsc && column == isCurrentSort)
+            'sort-column mdi mdi-arrow-down-bold':
+              column == isCurrentSort,
+            'mdi-arrow-up-bold': (isAsc && column == isCurrentSort)
             }"
           @click.stop="sort(column)">
         </th>
@@ -32,21 +35,10 @@
               <span class="check" />
               </label>
             </td>
-            <td v-for="column in columns">
-              <b-tag
-                v-if="row[column] == 'on'"
-                class="power"
-                type="is-success">
-                <power/>
-                On
-              </b-tag>
-              <b-tag
-                v-else-if="row[column] == 'off'"
-                class="power"
-                type="is-danger">
-                <power/>
-                Off
-              </b-tag>
+            <td v-for="column in columns"
+              :data-label="$t('tables.'+tableType+'.'+column,
+              $t('tables.application.'+column, column))">
+              <div v-if="columnNameToType[column]" v-html="columnNameToType[column](row[column])"/>
               <div v-else-if="row[column] == null">N/A</div>
               <div v-else v-html="row[column]"/>
             </td>
@@ -82,8 +74,11 @@
 </template>
 
 <script>
+import { TableCellRenderers } from '@/mixins'
+import '@/assets/css/utilities.scss'
 export default {
   name: "ApplicationTable",
+  mixins: [ TableCellRenderers ],
   data() {
     return {
       selected: {},
@@ -248,29 +243,11 @@ div.b-table {
         transition: all 0.25s;
       }
       th.sort-column {
-        padding-left: 1.5em;
         background: #ffffff36;
       }
-      th.sort-column::after {
-        border: 1px solid white;
-        border-right: 0;
-        border-top: 0;
-        content: " ";
-        display: block;
-        height: 0.5em;
-        width: 0.5em;
-        -webkit-transform: rotate(-45deg);
-        transform: rotate(-45deg);
-        -webkit-transform-origin: center;
-        transform-origin: center;
-        margin-top: -15px;
-        margin-left: -12px;
-        transition: all 0.25s;
-      }
-      th.sort-column.rotate::after {
-        -webkit-transform: rotate(135deg);
-        transform: rotate(135deg);
-        margin-top: -0.6rem;
+      th.sort-column.mdi::before {
+        font-size: 14px;
+        display: inline;
       }
       th.checkbox-cell {
         span.check {
@@ -306,10 +283,11 @@ div.b-table {
 .pagination {
   font-size: 0.8rem;
 }
-.power {
-  min-width: 52px;
-  span.power-icon {
-    margin-right: 3px;
+@media screen and (max-width: 1024px) {
+  [data-label="Onboard Step"],
+  [data-label="Onboard Status"],
+  [data-label="Brand"]  {
+    display:none;
   }
 }
 </style>

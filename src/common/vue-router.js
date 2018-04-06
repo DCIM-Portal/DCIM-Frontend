@@ -16,8 +16,9 @@ router.beforeEach((to, from, next) => {
     // next({
     //   name: 'Login'
     // })
+    console.log("auth")
     store.commit('triggerModal', true)
-    next({name: 'Home'})
+    next()
     // store.watch((state) => {
     //   console.log(state.auth.loginModal)
     //   console.log(state.auth.authenticated)
@@ -30,10 +31,12 @@ router.beforeEach((to, from, next) => {
     //   }
     // })
   } else if (to.matched.some(m => m.meta.guest) && store.state.auth.authenticated) {
+    console.log("guest")
     next({
       name: 'Home'
     })
   } else {
+    console.log("next")
     next()
   }
 })

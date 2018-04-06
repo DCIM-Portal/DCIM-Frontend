@@ -4,6 +4,9 @@ import { router } from '@/common/vue-router'
 const state = {
   authenticated: false,
   loginModal: false,
+  isLoginError: false,
+  loginError: false,
+  isLoginWait: false
 }
 
 const getters = {
@@ -12,11 +15,21 @@ const getters = {
   },
   isModalOpen(state) {
     return state.loginModal
+  },
+  isLoginError(state) {
+    return state.isLoginError
+  },
+  loginError(state) {
+    return state.loginError
+  },
+  isLoginWait(state) {
+    return state.isLoginWait
   }
 }
 
 const actions = {
   login(context, credentials) {
+    context.commit('setLoginWait', true)
     const refresh_token = localStorage.getItem('refresh')
     if (refresh_token) {
       credentials = { 'refresh_token': refresh_token }
@@ -27,15 +40,25 @@ const actions = {
           context.commit('setAuth', {
             id_token: res.data.jwt,
             refresh_token: res.data.refresh_token
-          })
+          }),
+          context.commit('triggerModal', false)
+          context.commit('setLoginWait', false)
         })
         .catch(error => {
-          console.log(error)
+          error.response =
+            (error.response === undefined) ? 'Timeout' : error.response
+          console.log(error.response)
+          context.commit('setError', error.response)
+          context.commit('purgeAuth')
+          context.commit('setLoginWait', false)
         })
   },
   logout(context) {
     context.commit('purgeAuth')
-    router.replace('/')
+    console.log(router.app._route.name)
+    if (router.app._route.name !== 'Home') {
+      router.replace('/')
+    }
   },
   checkAuth(context) {
     context.commit('setHeader')
@@ -65,6 +88,14 @@ const mutations = {
       ApiService
         .setHeader(localStorage.getItem('id_token'))
     }
+  },
+  setError(state, error) {
+    state.isLoginError =
+      error ? true : false
+    state.loginError = error
+  },
+  setLoginWait(state, value) {
+    state.isLoginWait = value
   },
   purgeAuth(state) {
     state.authenticated = false

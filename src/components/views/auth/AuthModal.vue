@@ -2,8 +2,9 @@
   <section>
 
     <!-- Login Button -->
-    <span class="navbar-item login"
-      @click.prevent="triggerModal">
+    <span class="navbar-item auth"
+      @click.prevent="triggerModal"
+      v-if="!auth">
       <a class="button is-success">
         <span class="icon">
          <i class="mdi mdi-18px mdi-login"></i>
@@ -12,9 +13,22 @@
       </a>
     </span>
 
+    <!-- Logout button -->
+    <span class="navbar-item auth"
+      @click.prevent="triggerModal"
+      v-if="auth">
+      <a class="button is-danger">
+        <span class="icon">
+          <i class="mdi mdi-18px mdi-logout"></i>
+        </span>
+        <span>Sign Out</span>
+      </a>
+    </span>
+
     <!-- Modal content -->
-    <b-modal :active.sync="modalActive" :width="420">
-      <login-modal-content/>
+    <b-modal class="auth-modal" :active.sync="modalActive" :width="420">
+      <login-modal-content v-if="!auth"/>
+      <logout-modal-content v-if="auth"/>
     </b-modal>
 
   </section>
@@ -22,10 +36,13 @@
 
 <script>
 import LoginModalContent from './modal/LoginModalContent'
+import LogoutModalContent from './modal/LogoutModalContent'
 export default {
   components: {
-    'login-modal-content': LoginModalContent
+    'login-modal-content': LoginModalContent,
+    'logout-modal-content': LogoutModalContent
   },
+  props: ['auth'],
   methods: {
     triggerModal () {
       this.$store.commit('setError', false)
@@ -35,7 +52,7 @@ export default {
   computed: {
     modalActive: {
       get() {
-        return this.$store.state.auth.loginModal
+        return this.$store.state.auth.authModal
       },
       set(value) {
         this.$store.commit('triggerModal', value)
@@ -46,7 +63,8 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.login {
+// Custom auth modal trigger buttons
+.auth {
   position: absolute;
   top: 0;
   right: 0;
@@ -57,9 +75,8 @@ export default {
     font-size: 0.8rem;
   }
 }
-
 @media screen and (max-width: 1024px) {
-  .login {
+  .auth {
     padding: 0.65rem 1rem;
   }
 }

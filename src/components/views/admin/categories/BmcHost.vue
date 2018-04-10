@@ -1,10 +1,13 @@
 <template>
-  <bmc-host-table
+  <div>
+    <bmc-host-table
     :columns="columns"
     :tableType="tableType"
     :orderField="orderField"
     :orderDirection="orderDirection"
     />
+  </div>
+
 </template>
 
 <script>

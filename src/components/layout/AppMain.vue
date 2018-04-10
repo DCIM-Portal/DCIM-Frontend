@@ -1,13 +1,13 @@
 <template>
   <section class="section app-main">
     <div class="container is-fluid is-marginless">
-      <level/>
+      <level v-if="isAuthenticated" :onGuest="onGuest"/>
       <transition
         mode="out-in"
         enter-active-class="fadeIn"
         leave-active-class="fadeOut"
         appear>
-        <router-view class="animated"/>
+        <router-view v-if="isAuthenticated || onGuest" class="animated"/>
       </transition>
     </div>
   </section>
@@ -20,6 +20,7 @@ export default {
   components: {
     'level': Level
   },
+  props: ['onGuest'],
   mixins: [WatchAuthModal]
 }
 </script>

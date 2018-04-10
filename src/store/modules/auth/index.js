@@ -3,10 +3,12 @@ import { router } from '@/common/vue-router'
 
 const state = {
   authenticated: false,
-  loginModal: false,
+  authModal: false,
   isLoginError: false,
   loginError: false,
-  isLoginWait: false
+  isLoginWait: false,
+  needAuth: false,
+  lostAuth: false
 }
 
 const getters = {
@@ -14,7 +16,7 @@ const getters = {
     return state.authenticated
   },
   isModalOpen(state) {
-    return state.loginModal
+    return state.authModal
   },
   isLoginError(state) {
     return state.isLoginError
@@ -24,18 +26,20 @@ const getters = {
   },
   isLoginWait(state) {
     return state.isLoginWait
+  },
+  needAuth (state) {
+    return state.needAuth
+  },
+  lostAuth (state) {
+    return state.lostAuth
   }
 }
 
 const actions = {
   login(context, credentials) {
     context.commit('setLoginWait', true)
-    const refresh_token = localStorage.getItem('refresh')
-    if (refresh_token) {
-      credentials = { 'refresh_token': refresh_token }
-    }
     ApiService
-      .post('auth/user_token', {auth: credentials})
+      .authPost('auth/user_token', {auth: credentials})
         .then(res => {
           context.commit('setAuth', {
             id_token: res.data.jwt,
@@ -43,19 +47,26 @@ const actions = {
           }),
           context.commit('triggerModal', false)
           context.commit('setLoginWait', false)
+          context.commit('setNeedAuth', false)
+          context.commit('setLostAuth', false)
         })
         .catch(error => {
-          error.response =
-            (error.response === undefined) ? 'Timeout' : error.response
-          console.log(error.response)
-          context.commit('setError', error.response)
           context.commit('purgeAuth')
-          context.commit('setLoginWait', false)
+          if (state.authModal) {
+            error.response =
+              (error.response === undefined) ? 'Timeout' : error.response
+            context.commit('setError', error.response)
+            context.commit('setLoginWait', false)
+          } //else if (!state.authModal) {
+          //   console.log('STORE MODAL WILL OPEN')
+          //   context.commit('setLoginWait', false)
+          //   context.commit('setLostAuth', true)
+          //   context.commit('triggerModal', true)
+          // }
         })
   },
   logout(context) {
     context.commit('purgeAuth')
-    console.log(router.app._route.name)
     if (router.app._route.name !== 'Home') {
       router.replace('/')
     }
@@ -78,9 +89,9 @@ const mutations = {
       .setHeader(userData.id_token)
   },
   triggerModal(state, value) {
-    state.loginModal = value
+    state.authModal = value
   },
-  // Ensure user is still authenticated
+  // Ensure user keeps JWT on page refresh
   setHeader(state) {
     const id_token = localStorage.getItem('id_token')
     state.authenticated = !!id_token
@@ -94,8 +105,14 @@ const mutations = {
       error ? true : false
     state.loginError = error
   },
+  setLostAuth(state, value) {
+    state.lostAuth = value
+  },
   setLoginWait(state, value) {
     state.isLoginWait = value
+  },
+  setNeedAuth(state, value) {
+    state.needAuth = value
   },
   purgeAuth(state) {
     state.authenticated = false

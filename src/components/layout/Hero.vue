@@ -1,11 +1,8 @@
 <template>
   <section class="hero is-info is-bold">
 
-    <!-- Login Modal -->
-    <app-login-modal v-if="!auth"/>
-
-    <!-- Logout Modal -->
-    <app-logout-modal v-if="auth"/>
+    <!-- Auth Modal -->
+    <app-auth-modal :auth.sync="auth"/>
 
     <!-- Hero Header -->
     <transition
@@ -13,13 +10,14 @@
       enter-active-class="fadeInLeft"
       leave-active-class="fadeOut"
       appear>
-      <div v-if="!onHome" class="hero-head animated">
+      <div v-if="!onGuest" class="hero-head animated">
         <nav class="navbar">
 
           <!-- Nav Menu Button -->
           <div class="navbar-item has-dropdown is-mega"
+            v-if="auth"
             :class="{
-              'is-hidden': onHome,
+              'is-hidden': onGuest,
               'rotate': menuIsActive
             }"
             v-on-clickaway="away">
@@ -49,7 +47,7 @@
 
     <!-- Hero Body -->
     <transition name="smooth">
-      <div v-if="onHome" class="hero-body">
+      <div v-if="onGuest" class="hero-body">
         <div class="container">
           <h1 class="title is-2 is-uppercase">
             <img class="is-pulled-left" width="45" src="@/assets/img/logo.svg">
@@ -65,7 +63,7 @@
     <!-- Hero footer -->
     <div class="hero-foot" v-if="auth">
       <nav class="tabs is-boxed is-small">
-        <div :class="{'container': onHome}">
+        <div :class="{'container': onGuest}">
           <ul>
 
             <!-- Parent Links -->
@@ -87,16 +85,14 @@
 
 <script>
 import NavMenu from '@/components/layout/NavMenu'
-import LoginModal from '@/components/views/auth/LoginModal'
-import LogoutModal from '@/components/views/auth/LogoutModal'
-import { ParentRoute, RouteList, ToggleMenu, OnHome, Auth } from '@/mixins'
+import AuthModal from '@/components/views/auth/AuthModal'
+import { ParentRoute, RouteList, ToggleMenu, Auth } from '@/mixins'
 import { mixin as ClickAway } from 'vue-clickaway';
 import { APP_TITLE } from '@/common/config'
 export default {
   components: {
     'app-navmenu': NavMenu,
-    'app-login-modal': LoginModal,
-    'app-logout-modal': LogoutModal
+    'app-auth-modal': AuthModal
   },
   methods: {
     parentIsActive(parent) {
@@ -110,12 +106,12 @@ export default {
   },
   mixins: [
     ParentRoute,
-    OnHome,
     RouteList,
     ClickAway,
     ToggleMenu,
     Auth
   ],
+  props: ['onGuest'],
   data() {
     return {
       routes: [],

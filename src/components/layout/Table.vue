@@ -116,7 +116,6 @@ export default {
   },
   methods: {
     fetchCollection: debounce(function() {
-      console.log(this.sortOrder)
       const params = [
         `?page=${this.currentPage}`,
         `per_page=${this.perPage}`,
@@ -125,13 +124,11 @@ export default {
         `order[${this.sortField}]=${this.sortOrder}`
       ].join('&')
       this.loading = true
-      console.log(params)
       this.fetchCollectionCancelSource = ApiService.cancelToken()
       ApiService
         .get(this.$route.meta.apiPath + params,
           { cancelToken: this.fetchCollectionCancelSource.token })
         .then(res => {
-          console.log(res)
           const table = res.data.pagination
           this.data = res.data.data
           this.pagesCount = table.pages_count
@@ -142,7 +139,7 @@ export default {
           this.loading = false
         })
         .catch(error => {
-          console.log(error)
+          //console.log(error.response)
         })
       return params
     }, 500, {leading: true}),
@@ -209,6 +206,7 @@ export default {
 </script>
 
 <style lang="scss">
+// Custom level for table controls
 div.table-level {
   div.autocomplete.control {
     .dropdown-menu {
@@ -223,10 +221,6 @@ div.table-level {
       max-width: 75px;
     }
   }
-  // div.control.has-icons-left .icon,
-  // div.control.has-icons-right .icon {
-  //   z-index: 1;
-  // }
   div.control {
     .label {
       font-weight: 300;
@@ -243,16 +237,19 @@ div.table-level {
     }
   }
 }
+// Custom pagination styles
 .pagination-list {
   a.pagination-link.is-current {
     background-color: #3d6075;
     border-color: #3d6075;
   }
 }
+// Some table controls need to be positioned right
 .is-absolute-right {
   position: absolute;
   right: 0;
 }
+// Smaller margin-bottom than standard
 div.field:not(:last-child) {
   margin-bottom: 0.25rem;
 }

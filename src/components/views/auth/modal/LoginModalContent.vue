@@ -1,12 +1,45 @@
 <template>
   <div>
-    <h1 class="title has-text-weight-light">Login</h1>
+
+    <div class="message-box">
+      <b-notification
+        :active.sync="needAuth"
+        type="is-info"
+        has-icon>
+        This page requires authentication.  Please login.
+      </b-notification>
+
+      <b-notification
+        :active.sync="lostAuth"
+        type="is-warning"
+        has-icon>
+        It appears you are no longer authenticated.  Please login.
+      </b-notification>
+
+      <b-notification
+        :active.sync="isLoginError"
+        has-icon
+        type="is-danger">
+        <div v-if="loginError == 'Timeout'">
+          {{ loginTimeout }}
+        </div>
+        <div v-else>
+          Login failed - please try again.&nbsp;
+          Response was {{ loginError.status }}: {{ loginError.statusText}}
+        </div>
+      </b-notification>
+    </div>
+
+    <h1 class="title has-text-weight-light">Sign In</h1>
+
+
     <form
       @submit.prevent="onSubmit(username, password)"
-      class="box"
-      >
+      class="box">
 
       <div v-if="isLoginWait" class="is-loading"/>
+
+
 
       <b-field label="Username">
         <b-input
@@ -29,23 +62,7 @@
           required/>
       </b-field>
 
-      <hr>
-
-        <b-message
-          :active.sync="isLoginError"
-          size="is-small"
-          title="Login Failed"
-          type="is-danger">
-          <div
-            class="error-message"
-            v-if="loginError == 'Timeout'">
-            {{ loginTimeout }}
-          </div>
-          <div class="error-message" v-else>
-            Login failed - please try again.
-            Response was {{ loginError.status }}: {{ loginError.statusText}}
-          </div>
-        </b-message>
+      <hr/>
 
       <p class="control">
         <button
@@ -63,6 +80,7 @@
       </p>
 
     </form>
+
   </div>
 </template>
 
@@ -73,7 +91,7 @@ export default {
   computed: {
     ...mapGetters({
       loginError: 'loginError',
-      isLoginWait: 'isLoginWait'
+      isLoginWait: 'isLoginWait',
     }),
     isLoginError: {
       get() {
@@ -81,6 +99,22 @@ export default {
       },
       set(value) {
         this.$store.commit('setError', value)
+      }
+    },
+    needAuth: {
+      get() {
+        return this.$store.state.auth.needAuth
+      },
+      set(value) {
+        this.$store.commit('setNeedAuth', value)
+      }
+    },
+    lostAuth: {
+      get() {
+        return this.$store.state.auth.lostAuth
+      },
+      set(value) {
+        this.$store.commit('setLostAuth', value)
       }
     }
   },
@@ -101,13 +135,53 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.error-message {
-  text-align: center;
-}
+// Give our modal form background an off-white
+// and raise z-index above modal background
 .box {
   background-color: whitesmoke;
   position: relative;
+  border-radius: 3px;
+  z-index: 51;
 }
+// Custom message-box for modal messages
+// Raise z-index of notifications
+.message-box {
+  max-width: 420px;
+  max-height: 200px;
+  height: 200px;
+  display: table-cell;
+  vertical-align: bottom;
+  padding-bottom: 20px;
+  transition: all 0.25s;
+  .notification {
+    padding: 0.8rem 2.3rem 0.8rem 0.8rem;
+    font-size: 1rem;
+    font-weight: 300;
+    z-index: 51;
+  }
+}
+// Message-box fixes for mobile views
+@media screen and (max-height: 800px) and (min-height: 710px) and (max-width: 769px) {
+  .message-box {
+    position: absolute;
+    bottom: 0;
+  }
+}
+@media screen and (max-height: 710px) and (min-height: 639px) and (max-width: 769px) {
+  .message-box {
+    position: absolute;
+    bottom: -70px;
+  }
+}
+@media screen and (max-height: 639px) {
+  .message-box {
+    position: relative;
+    height: auto;
+    margin-top: 20px;
+    display: inline-table;
+  }
+}
+// A loading overlay for modal form
 .is-loading {
   pointer-events: none;
   opacity: 0.6;

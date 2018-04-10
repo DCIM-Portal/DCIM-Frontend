@@ -28,7 +28,8 @@ export default [
     path: '/', name:'Home', component: Home,
     meta: {
       section: 'Home',
-      info: 'Home page'
+      info: 'Home page',
+      guest: true
     }
   },
   // Catalog Routes
@@ -125,15 +126,6 @@ export default [
       }
     ]
   },
-  // Login
-  //{
-  //  path: '/login', name: 'Login', component: Login,
-  //  meta: {
-  //    section: 'Login',
-  //    info: 'Login page',
-  //    guest: true
-  //  }
-  //},
   {
     path: '/*',
     meta: {},

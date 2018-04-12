@@ -7,13 +7,13 @@ import Assets from './sections/Asset'
 import ZonesRacks from './sections/ZoneRack'
 
 // Admin Categories
-import Zones from './categories/Zone'
-import BmcHosts from './categories/BmcHost'
-import Enclosures from './categories/Enclosure'
-import Racks from './categories/Rack'
-import Credentials from './categories/Credential'
-import OnboardRequests from './categories/OnboardRequest'
-import ScanRequests from './categories/ScanRequest'
+import Zones from './categories/Zones'
+import BmcHosts from './categories/BmcHosts'
+import Enclosures from './categories/Enclosures'
+import Racks from './categories/Racks'
+import Credentials from './categories/Credentials'
+import OnboardRequests from './categories/OnboardRequests'
+import ScanRequests from './categories/ScanRequests'
 
 export {
   Admin,

@@ -16,8 +16,7 @@
         v-model="backDirectionalLight"
         :direction="[-0.5, -0.75, -1]"
       />
-      <Box :position="[0, 0, 5]"/>
-      <enclosure-racks-manager />
+      <enclosure-racks-manager :racks="apiRacksList" />
     </Scene>
   </div>
 </template>
@@ -29,6 +28,10 @@
   Scene.methods.defaultEnvironment = function() {}
   // End: Vue-BabylonJS quirks
 
+  // Data provider
+  import ApiService from '@/common/api.service'
+
+  // VisualDC components
   import EnclosureRacksManager from "./EnclosureRacksManager";
 
   export default {
@@ -44,12 +47,39 @@
         cameraType: "arcRotate",
         frontDirectionalLight: null,
         backDirectionalLight: null,
+
+        rawApiData: null,
       }
     },
     watch: {
       camera() {
         console.log(this.camera)
       },
+    },
+    mounted() {
+      this.fetchEnclosureRacks()
+    },
+    computed: {
+      apiRacksList() {
+        try {
+          let racks = this.rawApiData['data']
+          return racks
+        } catch(err) {
+          return []
+        }
+      }
+    },
+    methods: {
+      fetchEnclosureRacks() {
+        ApiService
+          .get(`/enclosure_racks?filters[0][]=zone_id=${this.$route.params.id}`)
+          .then((response) => {
+            this.rawApiData = response['data']
+          })
+          .catch((rejection) => {
+            console.log(`Unhandled API response: ${rejection}`)
+          })
+      }
     }
   }
 </script>

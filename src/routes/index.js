@@ -1,6 +1,9 @@
 // Home Route Components
 import { Home } from '@/components/views/home'
 
+// Passthrough section component
+import PassthroughView from '@/components/views/PassthroughView'
+
 // Catalog Route Components
 import { Catalog } from '@/components/views/catalog'
 
@@ -8,19 +11,7 @@ import { Catalog } from '@/components/views/catalog'
 import { Documentation } from '@/components/views/documentation'
 
 // Admin Route Components
-import {
-  Admin,
-  Zones,
-  Racks,
-  Enclosures,
-  BmcHosts,
-  ScanRequests,
-  Credentials,
-  OnboardRequests,
-  ScanOnboard,
-  Assets,
-  ZonesRacks
-} from '@/components/views/admin/'
+import * as AdminViews from '@/components/views/admin/'
 
 export default [
   // Home
@@ -46,16 +37,18 @@ export default [
     path: '/documentation', name: 'Documentation', component: Documentation,
     meta: {
       section: 'Docs Hub',
-      info: 'Docs hub for all documenation',
+      info: 'Docs hub for all documentation',
       auth: true
     },
     children: [
-      { path: 'admin_docs', name: 'Admin Docs'}
+      {
+        path: 'admin_docs', name: 'Admin Docs'
+      }
     ]
   },
   // Admin Routes
   {
-    path: '/admin', name: 'Admin', component: Admin,
+    path: '/admin', name: 'Admin', component: AdminViews.Admin,
     meta: {
       section: 'Dashboard',
       info: 'Admin general purpose page',
@@ -64,63 +57,101 @@ export default [
     // Scans and Onboarding
     children: [
       {
-        path: 'scans_and_onboarding', name: 'Scans and Onboarding', component: ScanOnboard,
+        path: 'scans_and_onboarding', name: 'Scans and Onboarding', component: AdminViews.ScanOnboard,
         children: [
           {
-            path: 'scan_requests', name: 'Scan Requests', component: ScanRequests,
-            meta: {
-              info: 'Scan IP ranges for hosts'
-            }
+            path: 'scan_requests', component: PassthroughView,
+            children: [
+              {
+                path: '', name: 'Scan Requests', component: AdminViews.ScanRequests,
+                meta: {
+                  info: 'Scan IP ranges for hosts'
+                }
+              }
+            ]
           },
           {
-            path: 'credentials', name: 'Credentials', component: Credentials,
-            meta: {
-              info: 'Credentials used for scan requests'
-            }
+            path: 'credentials', component: PassthroughView,
+            children: [
+              {
+                path: '', name: 'Credentials', component: AdminViews.Credentials,
+                meta: {
+                  info: 'Credentials used for scan requests'
+                }
+              }
+            ]
           },
           {
-            path: 'onboard_requests', name: 'Onboard Requests', component: OnboardRequests,
-            meta: {
-              info: 'Onboard hosts into backend system'
-            }
+            path: 'onboard_requests', component: PassthroughView,
+            children: [
+              {
+                path: '', name: 'Onboard Requests', component: AdminViews.OnboardRequests,
+                meta: {
+                  info: 'Onboard hosts into backend system'
+                }
+              }
+            ]
           }
         ]
       },
       // Zones and Racks
       {
-        path: 'zones_and_racks', name: 'Zones and Racks', component: ZonesRacks,
+        path: 'zones_and_racks', name: 'Zones and Racks', component: AdminViews.ZonesRacks,
         children: [
           {
-            path: 'zones', name: 'Zones', component: Zones,
-            meta:  {
-              info: 'Create and manage datacenter zones',
-              apiPath: 'zones'
-            }
+            path: 'zones', component: PassthroughView,
+            children: [
+              {
+                path: '', name: 'Zones', component: AdminViews.Zones,
+                meta: {
+                  info: 'Create and manage datacenter zones',
+                  apiPath: 'zones'
+                }
+              },
+              {
+                path: ':id', name: 'Zone', component: AdminViews.Zone
+              }
+            ]
           },
           {
-            path: 'racks', name: 'Racks', component: Racks,
-            meta: {
-              info: 'Manage creation and location of racks'
-            }
+            path: 'racks', component: PassthroughView,
+            children: [
+              {
+                path: '', name: 'Racks', component: AdminViews.Racks,
+                meta: {
+                  info: 'Manage creation and location of racks'
+                }
+              }
+            ]
           },
           {
-            path: 'enclosures', name: 'Enclosures', component: Enclosures,
-            meta: {
-              info: 'Create and populate enclosures'
-            }
+            path: 'enclosures', component: PassthroughView,
+            children: [
+              {
+                path: '', name: 'Enclosures', component: AdminViews.Enclosures,
+                meta: {
+                  info: 'Create and populate enclosures'
+                }
+              }
+            ]
           }
         ]
       },
       // Assets
       {
-        path: 'assets', name: 'Assets', component: Assets,
+        path: 'assets', name: 'Assets', component: AdminViews.Assets,
         children: [
           {
-            path: 'bmc_hosts', name: 'BMC Hosts', component: BmcHosts,
-            meta: {
-              info: 'View and manage BMC hosts',
-              apiPath: 'bmc_hosts'
-            }
+            path: 'bmc_hosts', component: PassthroughView,
+            children: [
+              {
+                path: '', name: 'BMC Hosts', component: AdminViews.BmcHosts,
+                meta: {
+                  info: 'View and manage BMC hosts',
+                  apiPath: 'bmc_hosts'
+                }
+              }
+            ]
           }
         ]
       }

@@ -13,7 +13,7 @@
             @click.native="toggleMenu"
             class="navbar-item"
             :to="route"
-          exact>
+            exact>
             <div class="navbar-content">
               <p class="has-text-info">{{ route.meta.section }}</p>
               <small>{{ route.meta.info }}</small>
@@ -23,19 +23,19 @@
 
         <!-- Child slot -->
         <div slot="menu-content" class="column"
-          v-for="section in route.children"
-          :key="section.name"
+             v-for="section in route.children"
+             :key="section.name"
         >
           <h1 class="title is-6 is-mega-menu-title">{{ section.name }}</h1>
           <router-link class="navbar-item"
-            v-for="item in section.children"
-            :to="item"
-            :key="item.name"
-            @click.native="toggleMenu"
-          exact>
+                       v-for="category in emptySubroutesFromRoute(section)"
+                       :to="category"
+                       :key="category.name"
+                       @click.native="toggleMenu"
+                       exact>
             <div class="navbar-content">
-              <p class="has-text-info">{{ item.name }}</p>
-              <small>{{ item.meta.info }}</small>
+              <p class="has-text-info">{{ category.name }}</p>
+              <small>{{ category.meta.info }}</small>
             </div>
           </router-link>
         </div>
@@ -47,60 +47,95 @@
 </template>
 
 <script>
-import MenuContent from '@/components/views/navmenu/MenuContent'
-import ParentRoute from '@/mixins/parentRoute'
-import ToggleMenu from '@/mixins/toggleMenu'
-export default {
-  props: ['parent_route', 'routes'],
-  components: {
-    'app-menu-content': MenuContent,
-  },
-  mixins: [ToggleMenu]
-}
+  import MenuContent from '@/components/views/navmenu/MenuContent'
+  import ParentRoute from '@/mixins/parentRoute'
+  import ToggleMenu from '@/mixins/toggleMenu'
+  export default {
+    props: ['parent_route', 'routes'],
+    components: {
+      'app-menu-content': MenuContent,
+    },
+    mixins: [ToggleMenu],
+    data() {
+      return {
+        defaultRouteDeclaration: {
+          name: `FRONTEND BUG: NAME MISSING`,
+          meta: {
+            info: 'FRONTEND BUG: INFO MISSING'
+          }
+        }
+      }
+    },
+    methods: {
+      emptySubroutesFromRoute(section) {
+        try {
+          return section.children.map((category) => {
+            try {
+              return Object.assign(
+                {},
+                this.defaultRouteDeclaration,
+                category.children.find((categorySubroute) => categorySubroute.path === '')
+              )
+            } catch (err) {
+              return this.defaultRouteDeclaration
+            }
+          })
+        } catch (err) {
+          return [
+            Object.assign(
+              {},
+              this.defaultRouteDeclaration,
+              section
+            )
+          ]
+        }
+      }
+    }
+  }
 </script>
 
 
 <style lang="scss" scoped>
-// Mega-menu style customizations
-.hero {
-  .is-mega-menu-title {
-    margin-bottom: 0;
-    padding: .375rem 1rem;
-    color: #363636;
-  }
-  a:not(.button):not(.dropdown-item):not(.tag) {
-    color: black;
-  }
-}
-.has-text-info {
-  color: #456c86 !important;
-}
-.hero.is-info a.navbar-item:hover {
-  background-color: #f5f5f5;
-}
-
-// IE fix for columns in mobile view
-@media only screen and (max-width: 1024px) {
-  _:-ms-fullscreen, :root .columns:not(.is-desktop) {
-    display: block !important;
-  }
-}
-
-// General screen fixes
-@media screen and (max-width: 1024px) {
+  // Mega-menu style customizations
   .hero {
     .is-mega-menu-title {
-      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 0;
+      padding: .375rem 1rem;
+      color: #363636;
     }
     a:not(.button):not(.dropdown-item):not(.tag) {
-      color: #b9b9b9;
+      color: black;
     }
   }
   .has-text-info {
-    color: #91c8ec !important;
+    color: #456c86 !important;
   }
   .hero.is-info a.navbar-item:hover {
-    background-color: #f5f5f521;
+    background-color: #f5f5f5;
   }
-}
+
+  // IE fix for columns in mobile view
+  @media only screen and (max-width: 1024px) {
+    _:-ms-fullscreen, :root .columns:not(.is-desktop) {
+      display: block !important;
+    }
+  }
+
+  // General screen fixes
+  @media screen and (max-width: 1024px) {
+    .hero {
+      .is-mega-menu-title {
+        color: rgba(255, 255, 255, 0.9);
+      }
+      a:not(.button):not(.dropdown-item):not(.tag) {
+        color: #b9b9b9;
+      }
+    }
+    .has-text-info {
+      color: #91c8ec !important;
+    }
+    .hero.is-info a.navbar-item:hover {
+      background-color: #f5f5f521;
+    }
+  }
 </style>

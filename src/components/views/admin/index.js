@@ -15,6 +15,9 @@ import Credentials from './categories/Credentials'
 import OnboardRequests from './categories/OnboardRequests'
 import ScanRequests from './categories/ScanRequests'
 
+// Admin Details
+import Zone from './details/Zone'
+
 export {
   Admin,
   Zones,
@@ -26,5 +29,7 @@ export {
   ScanRequests,
   ScanOnboard,
   Assets,
-  ZonesRacks
+  ZonesRacks,
+
+  Zone,
 }

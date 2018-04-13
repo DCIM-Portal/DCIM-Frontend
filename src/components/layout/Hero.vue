@@ -68,6 +68,7 @@
 
             <!-- Parent Links -->
             <router-link tag="li" v-for="route in routes"
+              v-if="route.name"
               :to="route"
               :key="route.name"
               :class="{'router-link-active': parentIsActive(route.name)}"

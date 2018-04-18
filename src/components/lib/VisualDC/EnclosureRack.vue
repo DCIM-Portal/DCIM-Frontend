@@ -1,6 +1,10 @@
 <template>
-  <Box :options="meshOptions" :position="position">
-    <Material />
+  <Box :options="meshOptions" :position="position" :key="id">
+    <Material
+      diffuse="#78909C"
+      :specular="[0.1, 0.1, 0.1]"
+      emissive="#000000"
+    />
   </Box>
 </template>
 

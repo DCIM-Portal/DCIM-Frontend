@@ -30,8 +30,7 @@
           uncertain: {},
           // Awaiting placement under cursor
           ghost: {}
-        },
-        isInitialRackLoad: false
+        }
       }
     },
     props: {

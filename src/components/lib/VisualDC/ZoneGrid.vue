@@ -1,8 +1,8 @@
 <template>
   <section>
-    <LineSystem :options="zoneGridOptions" :key="generateUUID()" />
-    <TiledGround :options="zoneGroundOptions" :key="generateUUID()">
-      <Material :alpha="0.2" />
+    <LineSystem v-model="zoneGrid[zoneGridKey]" :options="zoneGridOptions" :key="zoneGridKey" />
+    <TiledGround v-model="zoneGround[zoneGroundKey]" :options="zoneGroundOptions" :key="zoneGroundKey">
+      <Material :alpha="0.0" />
     </TiledGround>
     <!-- Origin indicator; remove before production: -->
     <Tube :options="debugTubeOptions" />
@@ -10,7 +10,7 @@
 </template>
 
 <script>
-  let { Vector3 } = require('vue-babylonjs/classes');
+  let { Color3, Vector3 } = require('vue-babylonjs/classes');
 
   export default {
     name: "ZoneGrid",
@@ -31,6 +31,14 @@
         type: Number,
         default: 0
       },
+    },
+    data() {
+      return {
+        zoneGridKey: null,
+        zoneGroundKey: null,
+        zoneGrid: {},
+        zoneGround: {}
+      }
     },
     computed: {
       debugTubeOptions() {
@@ -80,6 +88,22 @@
           zmin: this.localMinY - 4,
           zmax: this.localMaxY + 4
         }
+      }
+    },
+    watch: {
+      zoneGridOptions() {
+        delete this.zoneGrid[this.zoneGridKey]
+        this.zoneGridKey = this.generateUUID()
+      },
+      zoneGroundOptions() {
+        delete this.zoneGround[this.zoneGroundKey]
+        this.zoneGroundKey = this.generateUUID()
+      },
+      zoneGrid() {
+        this.zoneGrid[this.zoneGridKey].color = new Color3(0, 0, 0)
+      },
+      zoneGround() {
+        //
       }
     },
     methods: {

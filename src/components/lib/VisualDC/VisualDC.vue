@@ -1,6 +1,10 @@
 <template>
   <div class="visual_dc">
-    <Scene touch-action="none" oncontextmenu="return false">
+    <Scene
+      v-model="scene"
+      touch-action="none"
+      oncontextmenu="return false"
+    >
       <Camera
         v-model="camera"
         :type="cameraType"
@@ -32,6 +36,8 @@
   Scene.methods.defaultEnvironment = function() {}
   // End: Vue-BabylonJS quirks
 
+  let { Color3 } = require('vue-babylonjs/classes');
+
   // Data provider
   import ApiService from '@/common/api.service'
 
@@ -56,8 +62,8 @@
       }
     },
     watch: {
-      camera() {
-        console.log(this.camera)
+      scene() {
+        this.scene.clearColor = Color3(229/256, 230/256, 231/256)
       },
     },
     mounted() {

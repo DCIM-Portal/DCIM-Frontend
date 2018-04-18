@@ -16,7 +16,11 @@
         v-model="backDirectionalLight"
         :direction="[-0.5, -0.75, -1]"
       />
-      <enclosure-racks-manager :racks="apiRacksList" />
+      <enclosure-racks-manager
+        :racks="apiRacksList"
+        v-on:set-camera-position="onSetCameraPosition"
+        v-on:set-camera-target="onSetCameraTarget"
+      />
     </Scene>
   </div>
 </template>
@@ -79,6 +83,12 @@
           .catch((rejection) => {
             console.log(`Unhandled API response: ${rejection}`)
           })
+      },
+      onSetCameraPosition(position) {
+        this.camera.setPosition(position)
+      },
+      onSetCameraTarget(target) {
+        this.camera.setTarget(target)
       }
     }
   }

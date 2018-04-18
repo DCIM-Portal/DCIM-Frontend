@@ -13,23 +13,25 @@
 <script>
   import ZoneGrid from "./ZoneGrid";
   import EnclosureRack from "./EnclosureRack"
+  let { Vector3 } = require('vue-babylonjs/classes');
 
   export default {
     name: "EnclosureRacksManager",
     data() {
       return {
         localRacks: {
-          // Committed to server
+          // Committed to server and on ZoneGrid
           solid: {},
+          // Committed to server and not on ZoneGrid
+          drawer: {},
           // To be sent to server
           pending: {},
           // Mouse down, not sure if dragging camera
           uncertain: {},
           // Awaiting placement under cursor
-          ghost: {},
-          // Not on ZoneGrid
-          drawer: {}
-        }
+          ghost: {}
+        },
+        isInitialRackLoad: false
       }
     },
     props: {
@@ -45,12 +47,12 @@
     },
     computed: {
       bounds() {
-        let min_x = Infinity
-        let min_y = Infinity
-        let max_x = -Infinity
-        let max_y = -Infinity
+        let minX = Infinity
+        let minY = Infinity
+        let maxX = -Infinity
+        let maxY = -Infinity
         if (!this.racks.length) {
-          min_x = max_x = min_y = max_y = 0
+          minX = maxX = minY = maxY = 0
         }
         let racks = Object.assign(
           {},
@@ -59,20 +61,23 @@
         for (let key in racks) {
           let rack = racks[key]
           // Adjust bounds according to this EnclosureRack
-          if (rack.x < min_x) min_x = rack.x;
-          if (rack.y < min_y) min_y = rack.y;
-          if (rack.x > max_x) max_x = rack.x;
-          if (rack.y > max_y) max_y = rack.y;
+          if (rack.x < minX) minX = rack.x;
+          if (rack.y < minY) minY = rack.y;
+          if (rack.x > maxX) maxX = rack.x;
+          if (rack.y > maxY) maxY = rack.y;
         }
-        if ([min_x, min_y].includes(Infinity) || [max_x, max_y].includes(Infinity)) {
-          console.log("Cannot compute ZoneGrid bounds: Coordinate value error in EnclosureRacks list")
+        if ([minX, minY].includes(Infinity) || [maxX, maxY].includes(Infinity)) {
+          console.log("VisualDC: Cannot compute ZoneGrid bounds: Coordinate value error in EnclosureRacks list")
           return false
         }
-        return [min_x, max_x, min_y, max_y]
+        return [minX, maxX, minY, maxY]
       }
     },
     watch: {
       racks() {
+        let isInitialRackLoad = Object.keys(this.localRacks.solid).length === 0
+          && this.localRacks.solid.constructor === Object
+
         // Populate localRacks with prop racks
         this.localRacks.solid = {}
         this.localRacks.drawer = {}
@@ -80,11 +85,36 @@
           if (this.rackIsPlaced(rack)) this.localRacks.solid[rack.id] = rack
           else this.localRacks.drawer[rack.id] = rack
         })
+
+        if (isInitialRackLoad) {
+          this.reorientCamera()
+        }
       }
     },
     methods: {
       rackIsPlaced(rack) {
         return !(rack.x === null || rack.y === null);
+      },
+      racksMidpoint() {
+        let xTotal = 0, yTotal = 0
+        let numOfEnclosureRacks = Object.keys(this.localRacks.solid).length
+        Object.keys(this.localRacks.solid).forEach((id) => {
+          let rack = this.localRacks.solid[id]
+          xTotal += rack.x
+          yTotal += rack.y
+        })
+        return [xTotal / numOfEnclosureRacks, yTotal / numOfEnclosureRacks]
+      },
+      reorientCamera() {
+        let xy = this.racksMidpoint()
+        let x = xy[0] + 0.5
+        let y = xy[1] + 0.5
+        if (isNaN(x) || isNaN(y)) {
+          x = y = 0
+          console.log("VisualDC: Cannot reorient camera: Value error from midpoint of EnclosureRacks")
+        }
+        this.$emit('set-camera-position', new Vector3(-x, 15, y))
+        this.$emit('set-camera-target', new Vector3(-x, 0, y - 0.000000000000001))
       }
     }
   }

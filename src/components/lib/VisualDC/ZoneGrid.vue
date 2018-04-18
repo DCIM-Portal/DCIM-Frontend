@@ -1,7 +1,7 @@
 <template>
   <section>
-    <LineSystem :options="zoneGridOptions" :key="rebuildComponentToken" />
-    <TiledGround :options="zoneGroundOptions" :key="rebuildComponentToken">
+    <LineSystem :options="zoneGridOptions" :key="generateUUID()" />
+    <TiledGround :options="zoneGroundOptions" :key="generateUUID()">
       <Material :alpha="0.2" />
     </TiledGround>
     <!-- Origin indicator; remove before production: -->
@@ -31,11 +31,6 @@
         type: Number,
         default: 0
       },
-    },
-    data() {
-      return {
-        rebuildComponentToken: this.generateUUID()
-      }
     },
     computed: {
       debugTubeOptions() {
@@ -85,14 +80,6 @@
           zmin: this.localMinY - 4,
           zmax: this.localMaxY + 4
         }
-      }
-    },
-    watch: {
-      zoneGridOptions() {
-        this.rebuildComponentToken = this.generateUUID()
-      },
-      zoneGroundOptions() {
-        this.rebuildComponentToken = this.generateUUID()
       }
     },
     methods: {

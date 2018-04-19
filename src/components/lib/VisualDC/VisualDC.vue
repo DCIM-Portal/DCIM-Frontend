@@ -36,7 +36,7 @@
   Scene.methods.defaultEnvironment = function() {}
   // End: Vue-BabylonJS quirks
 
-  let { Color3 } = require('vue-babylonjs/classes');
+  let { Color4 } = require('vue-babylonjs/classes');
 
   // Data provider
   import ApiService from '@/common/api.service'
@@ -63,7 +63,7 @@
     },
     watch: {
       scene() {
-        this.scene.clearColor = Color3(229/256, 230/256, 231/256)
+        this.scene.clearColor = new Color4(0, 0, 0, 0)
       },
     },
     mounted() {
@@ -72,8 +72,7 @@
     computed: {
       apiRacksList() {
         try {
-          let racks = this.rawApiData['data']
-          return racks
+          return this.rawApiData['data']
         } catch(err) {
           return []
         }

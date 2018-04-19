@@ -37,12 +37,37 @@ export default {
   animation-duration: 0.55s;
 }
 // Bulma and Buefy
+$orange: #e67e22;
+$yellow: #f1b70e;
+$green: #41b883;
+$turquoise: #1abc9c;
+$blue: #3498db;
+$purple: #8e44ad;
+$red: #ff6a6a;
+$white-ter: #ecf0f1;
+$primary: #375a7f !default;
 @import "~bulma";
 @import "~buefy/src/scss/buefy";
-// Set customized html standard
+// Roboto Font
+@import "./assets/css/font";
+// Vue Multiselect
+@import "vue-multiselect/dist/vue-multiselect.min.css";
+// Custom table css
+@import "./assets/css/table";
+// Overrides
 html {
   background-color: #f5f5f5;
   overflow-y: auto;
+}
+html, body, button, input, select, textarea {
+  font-family: $roboto-condensed
+}
+.box {
+  background: whitesmoke;
+  border-radius: 2px;
+}
+.title {
+  font-weight: 300;
 }
 // Style for auth modal (scroll bar on outer)
 .auth-modal {
@@ -86,5 +111,23 @@ html {
     color: white;
     background: rgba(61, 96, 117, 0.85);
   }
+}
+// Custom classes
+.has-shadow {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+.is-grey {
+  background-color: #efefef;
+  font-weight: 400;
+  border-color: transparent;
+  color: #35495e;
+}
+.button.is-grey:active {
+  border-color: transparent;
+  color: #35495e;
+}
+.button.is-grey:hover {
+  border-color: transparent;
+  color: #35495e;
 }
 </style>

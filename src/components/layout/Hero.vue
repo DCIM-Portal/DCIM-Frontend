@@ -169,6 +169,7 @@ export default {
   z-index: 5;
   .is-active {
     display: block;
+    border-radius: 2px;
   }
   .navbar-link:hover {
     background-color: transparent;

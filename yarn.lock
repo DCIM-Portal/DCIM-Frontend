@@ -2291,7 +2291,7 @@ faye-websocket@~0.11.0:
   dependencies:
     websocket-driver ">=0.5.1"
 
-file-loader@^1.1.4:
+file-loader@^1.1.11:
   version "1.1.11"
   resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-1.1.11.tgz#6fe886449b0f2a936e43cabaac0cdbfb369506f8"
   dependencies:
@@ -4666,7 +4666,7 @@ q@^1.1.2:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
 
-qs@6.5.1, qs@~6.5.1:
+qs@6.5.1, qs@^6.5.1, qs@~6.5.1:
   version "6.5.1"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.1.tgz#349cdf6eef89ec45c12d7d5eb3fc0c870343a6d8"
 
@@ -5963,8 +5963,8 @@ vue-bulma-breadcrumb@^1.0.1:
   resolved "https://registry.yarnpkg.com/vue-bulma-breadcrumb/-/vue-bulma-breadcrumb-1.0.1.tgz#5d9e5756f538f94feb8e265c3c947a39d87536f7"
 
 vue-clickaway@^2.2.2:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/vue-clickaway/-/vue-clickaway-2.2.1.tgz#c22b5654391849193f77d36889cc44345ccc60c1"
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/vue-clickaway/-/vue-clickaway-2.2.2.tgz#cecf6839575e8b2afc5d3edb3efb616d293dbb44"
   dependencies:
     loose-envify "^1.2.0"
 
@@ -5989,6 +5989,10 @@ vue-loader@^13.3.0:
     vue-hot-reload-api "^2.2.0"
     vue-style-loader "^3.0.0"
     vue-template-es2015-compiler "^1.6.0"
+
+vue-multiselect@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/vue-multiselect/-/vue-multiselect-2.1.0.tgz#9e8ee7087658f029d06778cdb8da0b34ee3f1e28"
 
 vue-progressbar@^0.7.4:
   version "0.7.4"

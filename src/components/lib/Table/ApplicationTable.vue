@@ -232,27 +232,18 @@ export default {
 div.b-table {
   table.table {
     font-size: 0.9rem;
-    font-weight: 300;
+    font-weight: 400;
     background: transparent;
     thead {
-      background-image: linear-gradient(140deg, #243b42 50%, #456c86 100%);
       th {
         font-weight: 400;
-        color: white;
         border-bottom: none;
         transition: all 0.25s;
-      }
-      th.sort-column {
-        background: #ffffff36;
+        cursor: default;
       }
       th.sort-column.mdi::before {
         font-size: 14px;
         display: inline;
-      }
-      th.checkbox-cell {
-        span.check {
-          border: 2px solid #ffffff;
-        }
       }
     }
   }
@@ -268,7 +259,9 @@ div.b-table {
   }
 }
 .b-checkbox.checkbox input[type=checkbox]:checked + .check {
-  border-color: #00d1b2;
+  border-color: #41b883;
+  background-color: #41b883;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 .b-checkbox.checkbox input[type=checkbox] + .check {
   width: 1.05em;
@@ -283,10 +276,11 @@ div.b-table {
 .pagination {
   font-size: 0.8rem;
 }
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 1160px) {
   [data-label="Onboard Step"],
   [data-label="Onboard Status"],
-  [data-label="Brand"]  {
+  [data-label="Brand"],
+  [data-label="Sync Time"]  {
     display:none;
   }
 }

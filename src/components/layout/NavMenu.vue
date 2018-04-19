@@ -102,6 +102,7 @@
       margin-bottom: 0;
       padding: .375rem 1rem;
       color: #363636;
+      font-weight: 600;
     }
     a:not(.button):not(.dropdown-item):not(.tag) {
       color: black;

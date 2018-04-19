@@ -1,48 +1,96 @@
 <template>
   <section>
-    <!-- Table Controls -->
-    <b-field
-    group-multiline
-    class="table-level"
-    >
-      <!-- Per Page -->
-      <b-field :type="perPageFieldType">
-        <div class="control is-flex">
-          <label class="label">Per Page</label>
-          <b-autocomplete
-            v-model="localPerPage"
-            :data="perPageOptions"
-            :placeholder="perPage"
-            type="number"
-            @input="generatePerPageSuggestions"
+    <div class="box has-shadow">
+      <!--Top Controls -->
+      <b-field
+        group-multiline
+        class="table-level top-controls">
+        <!-- Per Page -->
+        <b-field :type="perPageFieldType">
+          <div class="control is-flex">
+            <label class="label">Per Page</label>
+            <b-autocomplete
+              v-model="localPerPage"
+              :data="perPageOptions"
+              :placeholder="perPage"
+              type="number"
+              @input="generatePerPageSuggestions"/>
+          </div>
+        </b-field>
+        <!-- Magic Search -->
+        <div class="control is-absolute-right">
+          <b-input
+            v-model="localSearchQuery"
+            placeholder="Search..."
+            type="search"
+            icon="magnify"
             />
         </div>
       </b-field>
-      <!-- Mobile Sort -->
-      <!-- <b-select placeholder="Select a column">
-        <option
-          v-for="column in columns"
-          :value="column"
-          :key="column">
-          {{ $t('tables.'+tableType+'.'+column,
-          $t('tables.application.'+column, column)) }}
-        </option>
-      </b-select>
-      <p class="control">
-        <button class="button is-success"></button>
-      </p> -->
-      <!-- Search -->
-      <div class="control is-absolute-right">
-        <b-input
-          v-model="localSearchQuery"
-          placeholder="Search..."
-          type="search"
-          icon="magnify"
-          />
-      </div>
-
+      <!-- Table control buttons -->
+      <b-field
+      group-multiline
+      class="table-level">
+        <!-- Clear selection -->
+        <p class="control table-button">
+          <button class="button is-grey has-shadow">
+              <b-icon icon="minus-box"></b-icon>
+              <span class="is-hidden-mobile">De-select All</span>
+          </button>
+        </p>
+        <!-- Copy button -->
+        <p class="control table-button">
+          <button class="button is-grey has-shadow">
+              <b-icon icon="clipboard-text"></b-icon>
+              <span class="is-hidden-mobile">Copy to Clipboard</span>
+          </button>
+        </p>
+        <!-- Excel button -->
+        <p class="control table-button">
+          <button class="button is-grey has-shadow">
+              <b-icon icon="file-excel"></b-icon>
+              <span class="is-hidden-mobile">Save to Excel</span>
+          </button>
+        </p>
     </b-field>
-
+    <!-- Filters -->
+    <div class="filters">
+      <b-field
+        v-for="enumFilter in filterableEnums"
+        :key="enumFilter.name"
+        :label="$t('tables.'+tableType+'.'+enumFilter.name,
+          $t('tables.application.'+enumFilter.name, enumFilter.name))">
+        <div>
+          <multiselect
+            :options="Object.keys(enumFilter.enums)"
+            :multiple="true"
+            :searchable="false"
+            :limit="2"
+            :close-on-select="false"
+            :hide-selected="false"
+            placeholder="Select Filter"
+            :showLabels="false"
+            v-model="filterSelections[enumFilter.name]"
+            class="has-shadow">
+            <template slot="tag" slot-scope="props">
+              <span class="tag is-success has-shadow">
+                <span>
+                  {{
+                    $t('tables.attributes.'+enumFilter.name+
+                    '.'+props.option, props.option)
+                  }}
+                </span>
+                <span
+                  class="custom__remove"
+                  @click="props.remove(props.option)">
+                  ❌
+                </span>
+              </span>
+            </template>
+          </multiselect>
+        </div>
+      </b-field>
+    </div>
     <!-- Table -->
     <b-table
       striped
@@ -61,16 +109,20 @@
       :sortOrder.sync="sortOrder"
       checkable
       />
+
+    </div>
   </section>
 </template>
 
 <script>
+import Multiselect from 'vue-multiselect'
 import ApiService from '@/common/api.service'
 import ApplicationTable from '@/components/lib/Table/ApplicationTable'
 import debounce from 'lodash/debounce'
 export default {
   components: {
-    'b-table': ApplicationTable
+    'b-table': ApplicationTable,
+    Multiselect
   },
   props: {
     columns: {
@@ -106,28 +158,87 @@ export default {
       checkedRows: {},
       fetchCollectionCancelSource: ApiService.cancelToken(),
       sortOrder: this.orderDirection,
-      sortField: this.orderField
+      sortField: this.orderField,
+      filterSelections: {},
+      tableStructure: []
     }
   },
   computed: {
-    searchableFields() {
-      return this.columns.filter(item => item !== 'updated_at').join(",")
+    searchableColumns() {
+      if (this.tableStructure.length) {
+        return this.columns.filter(column => {
+          let columnStructure = this.columnToStructure(column)
+          return columnStructure.type === 'string'
+        })
+      }
+      return this.columns
+    },
+    filterableColumns() {
+      return this.columns.filter(
+        column => !this.searchableColumns.includes(column) &&
+        ['ip_address', 'updated_at', 'created_at'].includes
+      )
+    },
+    filterableEnums() {
+      let output = []
+      try {
+        this.filterableColumns.forEach((column) => {
+          let columnStructure = this.columnToStructure(column)
+          if (columnStructure.type === 'enum') {
+            output.push(
+              {
+                  "name": columnStructure.name,
+                  "enums": columnStructure.enum
+              }
+            )
+          }
+        })
+      }
+      catch (error) {
+      }
+      return output
     }
   },
   methods: {
+    columnToStructure(column) {
+      return this.tableStructure.find(item => item.name === column)
+    },
+    fetchStructure() {
+      ApiService
+        .get(this.tableType + '/structure')
+        .then(res => {
+          this.tableStructure = res.data.data
+        })
+        .catch(error => {
+          // Handled with axios inteceptor
+        })
+    },
     fetchCollection: debounce(function() {
-      const params = [
-        `?page=${this.currentPage}`,
-        `per_page=${this.perPage}`,
-        `search[fields]=${this.searchableFields}`,
-        `search[query]=${this.searchQuery}`,
-        `order[${this.sortField}]=${this.sortOrder}`
-      ].join('&')
+      let params = {
+        page: this.currentPage,
+        per_page: this.perPage,
+        search: {
+          fields: this.searchableColumns.join(","),
+          query: this.searchQuery
+        },
+        order: {}
+      }
+      params['order'][this.sortField] = this.sortOrder
+      let filters = {}
+      Object.keys(this.filterSelections).forEach((column_name) => {
+        filters[column_name] = []
+        this.filterSelections[column_name].forEach((filter) => {
+          filters[column_name].push(`${column_name}=${filter}`)
+        })
+      })
+      params['filters'] = filters
       this.loading = true
       this.fetchCollectionCancelSource = ApiService.cancelToken()
       ApiService
-        .get(this.$route.meta.apiPath + params,
-          { cancelToken: this.fetchCollectionCancelSource.token })
+        .get(this.$route.meta.apiPath, {
+          params: params,
+          cancelToken: this.fetchCollectionCancelSource.token
+        })
         .then(res => {
           const table = res.data.pagination
           this.data = res.data.data
@@ -139,7 +250,7 @@ export default {
           this.loading = false
         })
         .catch(error => {
-          //console.log(error.response)
+          // Handled with axios inteceptor
         })
       return params
     }, 500, {leading: true}),
@@ -180,77 +291,40 @@ export default {
     localSearchQuery(newValue) {
       this.searchQuery = newValue
       this.fetchCollectionCancelSource.cancel(
-        'New per page requested before server response'
+        'New search requested before server response'
       )
       this.fetchCollection()
     },
     sortOrder(newValue) {
       this.sortOrder = newValue
       this.fetchCollectionCancelSource.cancel(
-        'New per page requested before server response'
+        'New sort order requested before server response'
       )
       this.fetchCollection()
     },
     sortField(newValue) {
       this.sortField = newValue
       this.fetchCollectionCancelSource.cancel(
-        'New per page requested before server response'
+        'New sort field requested before server response'
       )
       this.fetchCollection()
+    },
+    filterSelections: {
+      handler(value) {
+        this.filterSelections = value
+        this.fetchCollectionCancelSource.cancel(
+          'New filter requested before server response'
+        )
+        this.fetchCollection()
+      },
+      deep: true
     }
   },
   mounted() {
     this.fetchCollection()
+    this.fetchStructure()
   }
 }
 </script>
-
-<style lang="scss">
-// Custom level for table controls
-div.table-level {
-  div.autocomplete.control {
-    .dropdown-menu {
-      min-width: 85px;
-      max-width: 85px;
-      a.dropdown-item {
-        font-size: 0.8rem;
-      }
-    }
-    input {
-      font-size: 0.8rem;
-      max-width: 75px;
-    }
-  }
-  div.control {
-    .label {
-      font-weight: 300;
-      font-size: 0.8rem;
-      align-self: center;
-      margin-right: 0.2rem;
-    }
-    input {
-      max-width: 120px;
-      font-size: 0.8rem;
-    }
-    .mdi::before {
-      margin-bottom: 6px;
-    }
-  }
-}
-// Custom pagination styles
-.pagination-list {
-  a.pagination-link.is-current {
-    background-color: #3d6075;
-    border-color: #3d6075;
-  }
-}
-// Some table controls need to be positioned right
-.is-absolute-right {
-  position: absolute;
-  right: 0;
-}
-// Smaller margin-bottom than standard
-div.field:not(:last-child) {
-  margin-bottom: 0.25rem;
-}
+<style lang="scss" scoped>
 </style>

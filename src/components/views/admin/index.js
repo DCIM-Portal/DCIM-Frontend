@@ -30,6 +30,6 @@ export {
   ScanOnboard,
   Assets,
   ZonesRacks,
-
+  // Detail Zone View
   Zone,
 }

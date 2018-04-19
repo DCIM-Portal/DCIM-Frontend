@@ -3,6 +3,7 @@ import axios from 'axios'
 import VueAxios from 'vue-axios'
 import { API_URL } from '@/common/config'
 import store from '@/store'
+import qs from 'qs'
 
 const auth = axios.create()
 const instance = axios.create()
@@ -11,6 +12,7 @@ const ApiService = {
   init () {
     Vue.use(VueAxios, axios)
     Vue.axios.defaults.baseURL = API_URL
+    Vue.axios.defaults.paramsSerializer = (params) => qs.stringify(params, {encode: false})
   },
   setHeader (token) {
     Vue.axios.defaults.headers.common['Authorization'] = 'Bearer ' + token

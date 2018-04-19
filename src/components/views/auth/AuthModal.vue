@@ -5,7 +5,7 @@
     <span class="navbar-item auth"
       @click.prevent="triggerModal"
       v-if="!auth">
-      <a class="button is-success">
+      <a class="button is-success has-shadow">
         <span class="icon">
          <i class="mdi mdi-18px mdi-login"></i>
         </span>
@@ -17,7 +17,7 @@
     <span class="navbar-item auth"
       @click.prevent="triggerModal"
       v-if="auth">
-      <a class="button is-danger">
+      <a class="button is-danger has-shadow">
         <span class="icon">
           <i class="mdi mdi-18px mdi-logout"></i>
         </span>

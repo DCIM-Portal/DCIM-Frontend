@@ -55,8 +55,8 @@ export default {
 <style lang="scss">
 // Fix breadcrumb spacing (also set font-size/weight)
 .breadcrumb {
-  font-size: 0.8rem;
-  font-weight: 300;
+  font-size: 0.9rem;
+  font-weight: 400;
   a {
     padding: 0;
   }

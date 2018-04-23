@@ -1,5 +1,9 @@
 <template>
-  <Box :options="meshOptions" :position="position" :key="id">
+  <Box :options="meshOptions"
+       :position="position"
+       :rotation="rotation"
+       :key="id"
+  >
     <Material
       v-model="material"
       :specular="[0.1, 0.1, 0.1]"
@@ -22,14 +26,24 @@
   }
   // End: Vue-BabylonJS quirks
 
-  export default {
+  let obj = {};
+  obj.computed = {};
+  ['id', 'name', 'height', 'orientation', 'x', 'y'].forEach((field) => {
+    obj.computed[field] = function() {
+      return this.data[field]
+    }
+  });
+
+  import merge from 'lodash/merge'
+  export default merge(obj, {
     name: "EnclosureRack",
     data() {
       return {
         scale: 0.8,
         scene: null,
         material: null,
-        texture: null
+        texture: null,
+        highlighted: false
       }
     },
     props: {
@@ -55,36 +69,31 @@
         output[4] = new Vector4(0, 0, 1, 1)
         return output
       },
-      id() {
-        return this.data['id']
-      },
-      name() {
-        return this.data['name']
-      },
-      height() {
-        return this.data['height']
-      },
-      x() {
-        return this.data['x']
-      },
-      y() {
-        return this.data['y']
-      },
       position() {
         return new Vector3(-(this.x + 0.5), this.relativeHeight / 2, this.y + 0.5)
+      },
+      rotation() {
+        return new Vector3(0, Math.PI / 180 * this.orientation, 0)
       }
     },
     watch: {
+      highlighted() {
+        this.redrawTexture()
+      },
       texture() {
-        let highlight = false
+        this.redrawTexture()
+      }
+    },
+    methods: {
+      redrawTexture() {
         let noHighlightColor = "#78909C";
         let yesHighlightColor = "#8ba3af";
-        let highlightColor = highlight ? yesHighlightColor : noHighlightColor;
+        let highlightColor = this.highlighted ? yesHighlightColor : noHighlightColor;
         this.texture.drawText(this.name, null, null, "160px 'Roboto Condensed'", "white", highlightColor)
         this.texture.wAng = Math.PI / 180 * 90
       }
     }
-  }
+  })
 </script>
 
 <style scoped>

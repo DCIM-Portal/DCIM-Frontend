@@ -858,9 +858,11 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-babylonjs@^3.2.0-beta.1:
-  version "3.2.0-beta.4"
-  resolved "https://registry.yarnpkg.com/babylonjs/-/babylonjs-3.2.0-beta.4.tgz#7754b9c91e84c0845b63793a08d649f97295b144"
+babylonjs@3.2.0-beta.1:
+  version "3.2.0-beta.1"
+  resolved "https://registry.yarnpkg.com/babylonjs/-/babylonjs-3.2.0-beta.1.tgz#2b91e78722669f8c253f02271f478d24fcce9f4c"
+  dependencies:
+    cannon "0.6.2"
 
 balanced-match@^0.4.2:
   version "0.4.2"
@@ -1195,7 +1197,7 @@ caniuse-lite@^1.0.30000792, caniuse-lite@^1.0.30000805:
   version "1.0.30000824"
   resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30000824.tgz#de3bc1ba0bff4937302f8cb2a8632a8cc1c07f9a"
 
-cannon@^0.6.2:
+cannon@0.6.2, cannon@^0.6.2:
   version "0.6.2"
   resolved "https://registry.yarnpkg.com/cannon/-/cannon-0.6.2.tgz#1e7bc72dd5841982f3c104c2bc578bfa4fb1c572"
 
@@ -5945,12 +5947,12 @@ vue-axios@^2.1.1:
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/vue-axios/-/vue-axios-2.1.1.tgz#6167f2db93065d9bcfc90e65d063ccf34f8b1d63"
 
-vue-babylonjs@^1.0.0-beta.2:
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/vue-babylonjs/-/vue-babylonjs-1.0.0-beta.2.tgz#7559dacb36eeb72772455fda11b6dda33889ef48"
+vue-babylonjs@^1.0.0-beta.3:
+  version "1.0.0-beta.3"
+  resolved "https://registry.yarnpkg.com/vue-babylonjs/-/vue-babylonjs-1.0.0-beta.3.tgz#bc3e12b73284d36228446a9dfd00a35385d3f170"
   dependencies:
     babel-preset-env "^1.6.1"
-    babylonjs "^3.2.0-beta.1"
+    babylonjs "3.2.0-beta.1"
 
 vue-backtotop@^1.3.9:
   version "1.3.9"

@@ -28,29 +28,23 @@ export default {
       list: null
     }
   },
-  created () {
-    this.getList()
-  },
   computed: {
     name () {
-      return this.$route.name
+      let globalTitle = this.$store.state.page.title
+      return this.$route.name || globalTitle[globalTitle.length - 1]
     },
     pathAncestry() {
-      console.log(this.$route)
       let ancestry = routesBuilder.getFlatAncestryOfPath(this.$route.matched[0].path)
       ancestry.forEach((route, index, original) => {
         if (original[index].title)
           original[index].name = original[index].title
-        else if (index === original.length - 1)
+        else if (index === original.length - 1 && this.name)
           original[index].name = this.name
+        else
+          original[index].name = route.path.split('/').reverse()[0]
         original[index].path += '/'
       })
-      console.log(ancestry)
       return ancestry
-    }
-  },
-  methods: {
-    getList () {
     }
   }
 }

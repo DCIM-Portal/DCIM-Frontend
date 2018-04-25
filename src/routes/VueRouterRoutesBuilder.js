@@ -139,7 +139,6 @@ export default class VueRouterRoutesBuilder {
   }
 
   getIndexOfPath(path) {
-    console.log(path)
     let pathParts = path.split('/')
     let tree = this.routesTree
     pathParts.forEach((pathPart) => {

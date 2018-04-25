@@ -50,6 +50,20 @@
       EnclosureRacksManager,
       'enclosure-racks-manager': EnclosureRacksManager
     },
+    props: {
+      view: {
+        type: String,
+        default: null
+      },
+      modelName: {
+        type: String,
+        default: null
+      },
+      modelId: {
+        type: Number,
+        default: null
+      }
+    },
     data() {
       return {
         scene: null,
@@ -81,7 +95,7 @@
     methods: {
       fetchEnclosureRacks() {
         ApiService
-          .get(`/enclosure_racks?filters[0][]=zone_id=${this.$route.params.id}`)
+          .get(`/${this.view}?filters[0][]=${this.modelName}_id=${this.modelId}`)
           .then((response) => {
             this.rawApiData = response['data']
           })

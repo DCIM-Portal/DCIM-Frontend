@@ -118,7 +118,7 @@ export default {
   },
   computed: {
     parentRouteTitle() {
-      return routesBuilder.getParentRouteFromPath(this.$route.fullPath).title
+      return routesBuilder.getParentRouteFromPath(this.$route.matched[0].path).title
     }
   }
 }

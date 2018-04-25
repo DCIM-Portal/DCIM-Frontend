@@ -48,19 +48,9 @@
       'app-menu-content': MenuContent,
     },
     mixins: [ToggleMenu],
-    data() {
-      return {
-        defaultRouteDeclaration: {
-          name: `FRONTEND BUG: NAME MISSING`,
-          meta: {
-            info: 'FRONTEND BUG: INFO MISSING'
-          }
-        }
-      }
-    },
     computed: {
       routeSections() {
-        return this.routesBuilder.getSectionsFromPath(this.$route.fullPath)
+        return this.routesBuilder.getSectionsFromPath(this.$route.matched[0].path)
       }
     },
     methods: {
@@ -71,29 +61,6 @@
         let subroutes = this.routesBuilder.getSubroutesOfPath(section.path)
         if (subroutes.length > 0 && subroutes[0].path.endsWith('/')) subroutes = subroutes.splice(1)
         return subroutes
-      },
-      emptySubroutesFromRoute(section) {
-        try {
-          return section.children.map((category) => {
-            try {
-              return Object.assign(
-                {},
-                this.defaultRouteDeclaration,
-                category.children.find((categorySubroute) => categorySubroute.path === '')
-              )
-            } catch (err) {
-              return this.defaultRouteDeclaration
-            }
-          })
-        } catch (err) {
-          return [
-            Object.assign(
-              {},
-              this.defaultRouteDeclaration,
-              section
-            )
-          ]
-        }
       }
     }
   }

@@ -24,8 +24,18 @@ export default class VueRouterRoutesBuilder {
     tree['path'] = path
     tree['index'] = this.index
     this.index ++
+
+    // Consideration for detail component
+    let detailComponent = meta['detailComponent']
+    delete meta['detailComponent']
+
+    // Merge meta and branch into tree
     Object.assign(tree, meta)
     merge(this.routesTree, pathTree)
+
+    // Auto-generate detail component
+    if (detailComponent)
+      this.add(`${path}/:id`, detailComponent, null, null, meta)
   }
 
   flatten(accumulator = this.routesTree, parentMeta = {}, depth = 0) {
@@ -74,17 +84,6 @@ export default class VueRouterRoutesBuilder {
       delete(builderRoute['component'])
       vueRouterRoute['meta'] = builderRoute
       vueRouterRoutes.push(vueRouterRoute)
-
-      // Auto-generate detail component
-      if (builderRoute['detailComponent']) {
-        vueRouterRoute = merge({}, vueRouterRoute, {
-          path: `${vueRouterRoute['path']}/:id`,
-          component: builderRoute['detailComponent']
-        })
-        delete vueRouterRoute['name']
-        delete vueRouterRoute['detailComponent']
-        vueRouterRoutes.push(vueRouterRoute)
-      }
     })
     return vueRouterRoutes
   }
@@ -139,13 +138,18 @@ export default class VueRouterRoutesBuilder {
     return this.getLinkableRouteFromPath(path + '/')
   }
 
-  getSubroutesOfPath(path) {
+  getIndexOfPath(path) {
+    console.log(path)
     let pathParts = path.split('/')
     let tree = this.routesTree
     pathParts.forEach((pathPart) => {
       tree = tree[pathPart]
     })
-    let index = tree[META].index
+    return tree[META].index
+  }
+
+  getSubroutesOfPath(path) {
+    let index = this.getIndexOfPath(path)
 
     let remainingRoutes = this.flatten().slice(index)
     let requiredDepth = remainingRoutes[0].depth + 1
@@ -157,5 +161,21 @@ export default class VueRouterRoutesBuilder {
     })
 
     return returnRoutes
+  }
+
+  getFlatAncestryOfPath(path) {
+    let index = this.getIndexOfPath(path)
+    let leadingRoutes = this.flatten().splice(0, index+1).reverse()
+    let currentDepth = leadingRoutes[0].depth
+    let returnRoutes = [leadingRoutes[0]]
+
+    leadingRoutes.forEach((route) => {
+      if (route.depth < currentDepth) {
+        currentDepth --
+        returnRoutes.push(route)
+      }
+    })
+
+    return returnRoutes.reverse()
   }
 }

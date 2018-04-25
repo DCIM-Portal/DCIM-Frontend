@@ -9,13 +9,15 @@
     </div>
 
     <div class="level-right is-hidden-mobile">
-      <breadcrumb :list="list"></breadcrumb>
+      <breadcrumb :list="pathAncestry"></breadcrumb>
     </div>
   </nav>
 </template>
 
 <script>
 import Breadcrumb from 'vue-bulma-breadcrumb'
+import { routesBuilder } from "@/routes";
+
 export default {
   components: {
     Breadcrumb
@@ -32,21 +34,23 @@ export default {
   computed: {
     name () {
       return this.$route.name
+    },
+    pathAncestry() {
+      console.log(this.$route)
+      let ancestry = routesBuilder.getFlatAncestryOfPath(this.$route.matched[0].path)
+      ancestry.forEach((route, index, original) => {
+        if (original[index].title)
+          original[index].name = original[index].title
+        else if (index === original.length - 1)
+          original[index].name = this.name
+        original[index].path += '/'
+      })
+      console.log(ancestry)
+      return ancestry
     }
   },
   methods: {
     getList () {
-      let matched = this.$route.matched.filter(item => item.name)
-      let first = matched[0]
-      if (first && (first.name !== 'Home' || first.path !== '')) {
-        matched = [{ name: 'Home', path: '/' }].concat(matched)
-      }
-      this.list = matched
-    }
-  },
-  watch: {
-    $route () {
-      this.getList()
     }
   }
 }

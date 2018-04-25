@@ -17,6 +17,7 @@
 import { WatchAuthModal } from '@/mixins'
 import Level from './Level'
 export default {
+  name: "AppMain",
   components: {
     'level': Level
   },

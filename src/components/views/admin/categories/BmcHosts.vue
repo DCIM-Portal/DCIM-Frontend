@@ -13,6 +13,7 @@
 <script>
 import Table from '@/components/layout/Table'
 export default {
+  name: "BmcHosts",
   components: {
     'bmc-host-table': Table
   },

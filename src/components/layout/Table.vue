@@ -120,9 +120,10 @@ import ApiService from '@/common/api.service'
 import ApplicationTable from '@/components/lib/Table/ApplicationTable'
 import debounce from 'lodash/debounce'
 export default {
+  name: "Table",
   components: {
     'b-table': ApplicationTable,
-    Multiselect
+    'multiselect': Multiselect
   },
   props: {
     columns: {

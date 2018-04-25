@@ -1,9 +1,6 @@
 // Home Route Components
 import { Home } from '@/components/views/home'
 
-// Passthrough section component
-import PassthroughView from '@/components/views/PassthroughView'
-
 // Catalog Route Components
 import { Catalog } from '@/components/views/catalog'
 
@@ -13,153 +10,35 @@ import { Documentation } from '@/components/views/documentation'
 // Admin Route Components
 import * as AdminViews from '@/components/views/admin/'
 
-export default [
-  // Home
-  {
-    path: '/', name:'Home', component: Home,
-    meta: {
-      section: 'Home',
-      info: 'Home page',
-      guest: true
-    }
-  },
-  // Catalog Routes
-  {
-    path: '/catalog', name: 'Catalog', component: Catalog,
-    meta: {
-      section: 'Catalog',
-      info: 'Catalog main page',
-      auth: true
-    }
-  },
-  // Documentation Routes
-  {
-    path: '/documentation', name: 'Documentation', component: Documentation,
-    meta: {
-      section: 'Docs Hub',
-      info: 'Docs hub for all documentation',
-      auth: true
-    },
-    children: [
-      {
-        path: 'admin_docs', name: 'Admin Docs'
-      }
-    ]
-  },
-  // Admin Routes
-  {
-    path: '/admin', name: 'Admin', component: AdminViews.Admin,
-    meta: {
-      section: 'Dashboard',
-      info: 'Admin general purpose page',
-      auth: true
-    },
-    // Scans and Onboarding
-    children: [
-      {
-        path: 'scans_and_onboarding', name: 'Scans and Onboarding', component: AdminViews.ScanOnboard,
-        children: [
-          {
-            path: 'scan_requests', component: PassthroughView,
-            children: [
-              {
-                path: '', name: 'Scan Requests', component: AdminViews.ScanRequests,
-                meta: {
-                  info: 'Scan IP ranges for hosts'
-                }
-              }
-            ]
-          },
-          {
-            path: 'credentials', component: PassthroughView,
-            children: [
-              {
-                path: '', name: 'Credentials', component: AdminViews.Credentials,
-                meta: {
-                  info: 'Credentials used for scan requests'
-                }
-              }
-            ]
-          },
-          {
-            path: 'onboard_requests', component: PassthroughView,
-            children: [
-              {
-                path: '', name: 'Onboard Requests', component: AdminViews.OnboardRequests,
-                meta: {
-                  info: 'Onboard hosts into backend system'
-                }
-              }
-            ]
-          }
-        ]
-      },
-      // Zones and Racks
-      {
-        path: 'zones_and_racks', name: 'Zones and Racks', component: AdminViews.ZonesRacks,
-        children: [
-          {
-            path: 'zones', component: PassthroughView,
-            children: [
-              {
-                path: '', name: 'Zones', component: AdminViews.Zones,
-                meta: {
-                  info: 'Create and manage datacenter zones',
-                  apiPath: 'zones'
-                }
-              },
-              {
-                path: ':id', name: 'Zone', component: AdminViews.Zone
-              }
-            ]
-          },
-          {
-            path: 'racks', component: PassthroughView,
-            children: [
-              {
-                path: '', name: 'Racks', component: AdminViews.Racks,
-                meta: {
-                  info: 'Manage creation and location of racks'
-                }
-              }
-            ]
-          },
-          {
-            path: 'enclosures', component: PassthroughView,
-            children: [
-              {
-                path: '', name: 'Enclosures', component: AdminViews.Enclosures,
-                meta: {
-                  info: 'Create and populate enclosures'
-                }
-              }
-            ]
-          }
-        ]
-      },
-      // Assets
-      {
-        path: 'assets', name: 'Assets', component: AdminViews.Assets,
-        children: [
-          {
-            path: 'bmc_hosts', component: PassthroughView,
-            children: [
-              {
-                path: '', name: 'BMC Hosts', component: AdminViews.BmcHosts,
-                meta: {
-                  info: 'View and manage BMC hosts',
-                  apiPath: 'bmc_hosts'
-                }
-              }
-            ]
-          }
-        ]
-      }
-    ]
-  },
-  {
-    path: '/*',
-    meta: {},
-    redirect: '/',
-  }
-]
+import { APP_TITLE } from '@/common/config'
+import VueRouterRoutesBuilder from '@/routes/VueRouterRoutesBuilder'
+
+let routes = new VueRouterRoutesBuilder()
+routes.add('', null, APP_TITLE)
+routes.add('/', Home, 'Home', 'Home page', {guest: true})
+routes.add('/catalog', null, 'Catalog', null, {auth: true})
+routes.add('/catalog/', Catalog, 'Catalog Home', 'Catalog main page')
+routes.add('/documentation', null, 'Documentation', null, {auth: true})
+routes.add('/documentation/', Documentation, 'Docs Hub', 'Docs hub for all documentation')
+routes.add('/documentation/admin_docs', null, 'Admin Docs')
+routes.add('/admin', null, 'Admin', null, {auth: true})
+routes.add('/admin/', AdminViews.Admin, 'Dashboard', 'Admin Dashboard')
+routes.add('/admin/scans_and_onboarding', null, 'Scans and Onboarding')
+routes.add('/admin/scans_and_onboarding/', AdminViews.ScanOnboard, 'Scans and Onboarding Landing Page')
+routes.add('/admin/scans_and_onboarding/scan_requests', AdminViews.ScanRequests, 'Scan Requests', 'Scan IP ranges for hosts')
+routes.add('/admin/scans_and_onboarding/credentials', AdminViews.Credentials, 'Credentials', 'Credentials used for scan requests')
+routes.add('/admin/scans_and_onboarding/onboard_requests', AdminViews.OnboardRequests, 'Onboard Requests', 'Onboard hosts into backend system')
+routes.add('/admin/organization', null, 'Physical Organization')
+routes.add('/admin/organization/', AdminViews.ZonesRacks, 'Zones and Racks')
+routes.add('/admin/organization/zones', AdminViews.Zones, 'Zones', 'Create and manage data center zones', {detailComponent: AdminViews.Zone, apiPath: 'zones'})
+routes.add('/admin/organization/racks', AdminViews.Racks, 'Racks', 'Manage creation and location of racks')
+routes.add('/admin/organization/enclosures', AdminViews.Enclosures, 'Enclosures', 'Create and populate enclosures')
+routes.add('/admin/assets', null, 'Assets')
+routes.add('/admin/assets/bmc_hosts', AdminViews.BmcHosts, 'BMC Hosts', 'View and manage BMC hosts', {apiPath: 'bmc_hosts'})
+routes.add('*', null, null, null, {redirect: '/'})
+
+export default routes.toVueRouterRoutes()
+
+export {
+  routes as routesBuilder
+}

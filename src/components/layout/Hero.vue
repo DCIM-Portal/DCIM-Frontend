@@ -23,7 +23,7 @@
             v-on-clickaway="away">
             <div class="navbar-link" @click="toggleMenu">
               <img src="@/assets/img/logo.svg">
-              {{ title }} {{ parent_route }}
+              {{ title }} {{ parentRouteTitle }}
             </div>
 
             <!-- Nav Menu Contents -->
@@ -33,8 +33,8 @@
               leave-active-class="fadeOutUp">
               <app-navmenu
                 :class="{'is-active': menuIsActive}"
-                :parent_route="parent_route"
-                :routes="routes"
+                :parent-route-title="parentRouteTitle"
+                :routes-builder="routesBuilder"
                 class="animated"
                 v-if="menuIsActive"
               />
@@ -67,13 +67,13 @@
           <ul>
 
             <!-- Parent Links -->
-            <router-link tag="li" v-for="route in routes"
-              v-if="route.name"
+            <router-link tag="li" v-for="route in parentRoutes"
+              v-if="route.title"
               :to="route"
-              :key="route.name"
-              :class="{'router-link-active': parentIsActive(route.name)}"
-            exact>
-              <a>{{ route.name }}</a>
+              :key="route.title"
+              :class="{'router-link-active': route.title === parentRouteTitle}"
+              exact>
+              <a>{{ route.title }}</a>
             </router-link>
 
           </ul>
@@ -87,7 +87,8 @@
 <script>
 import NavMenu from '@/components/layout/NavMenu'
 import AuthModal from '@/components/views/auth/AuthModal'
-import { ParentRoute, RouteList, ToggleMenu, Auth } from '@/mixins'
+import { ToggleMenu, Auth } from '@/mixins'
+import { routesBuilder } from '@/routes'
 import { mixin as ClickAway } from 'vue-clickaway';
 import { APP_TITLE } from '@/common/config'
 export default {
@@ -96,9 +97,6 @@ export default {
     'app-auth-modal': AuthModal
   },
   methods: {
-    parentIsActive(parent) {
-      return this.$route.matched[0].name == parent
-    },
     away: function() {
       if (this.menuIsActive) {
         this.menuIsActive = false
@@ -106,8 +104,6 @@ export default {
     }
   },
   mixins: [
-    ParentRoute,
-    RouteList,
     ClickAway,
     ToggleMenu,
     Auth
@@ -115,8 +111,14 @@ export default {
   props: ['onGuest'],
   data() {
     return {
-      routes: [],
+      routesBuilder: routesBuilder,
+      parentRoutes: routesBuilder.getParentRoutes(),
       title: APP_TITLE
+    }
+  },
+  computed: {
+    parentRouteTitle() {
+      return routesBuilder.getParentRouteFromPath(this.$route.fullPath).title
     }
   }
 }

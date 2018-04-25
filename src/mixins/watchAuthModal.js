@@ -1,6 +1,6 @@
 import { mapGetters } from 'vuex'
-import store from '@/store'
 import { router } from '@/common/vue-router'
+import store from '@/store'
 export default {
   computed: {
     ...mapGetters({

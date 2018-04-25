@@ -1,41 +1,34 @@
 <template>
   <div class="navbar-dropdown">
     <div class="container is-fluid">
-      <app-menu-content
-        v-for="route in routes"
-        v-if="route.name == parent_route"
-        :key="route.name"
-      >
-        <!-- Main menu slot -->
-        <div slot="main-menu" class="column">
-          <h1 class="title is-6 is-mega-menu-title">{{ route.name }} Main</h1>
-          <router-link
-            @click.native="toggleMenu"
-            class="navbar-item"
-            :to="route"
-            exact>
-            <div class="navbar-content">
-              <p class="has-text-info">{{ route.meta.section }}</p>
-              <small>{{ route.meta.info }}</small>
-            </div>
-          </router-link>
-        </div>
-
+      <app-menu-content>
         <!-- Child slot -->
         <div slot="menu-content" class="column"
-             v-for="section in route.children"
-             :key="section.name"
+             v-for="section in routeSections"
+             :key="section.title"
         >
-          <h1 class="title is-6 is-mega-menu-title">{{ section.name }}</h1>
+          <h1 class="title is-6 is-mega-menu-title">
+            <router-link
+              :to="linkableSection(section)"
+              v-if="linkableSection(section)"
+              @click.native="toggleMenu"
+            >
+              {{ section.title }}
+            </router-link>
+            <span
+              v-else>
+              {{ section.title }}
+            </span>
+          </h1>
           <router-link class="navbar-item"
-                       v-for="category in emptySubroutesFromRoute(section)"
+                       v-for="category in subroutesOfSection(section)"
                        :to="category"
-                       :key="category.name"
+                       :key="category.title"
                        @click.native="toggleMenu"
                        exact>
             <div class="navbar-content">
-              <p class="has-text-info">{{ category.name }}</p>
-              <small>{{ category.meta.info }}</small>
+              <p class="has-text-info">{{ category.title }}</p>
+              <small>{{ category.info }}</small>
             </div>
           </router-link>
         </div>
@@ -48,10 +41,9 @@
 
 <script>
   import MenuContent from '@/components/views/navmenu/MenuContent'
-  import ParentRoute from '@/mixins/parentRoute'
   import ToggleMenu from '@/mixins/toggleMenu'
   export default {
-    props: ['parent_route', 'routes'],
+    props: ['parentRouteTitle', 'routesBuilder'],
     components: {
       'app-menu-content': MenuContent,
     },
@@ -66,7 +58,20 @@
         }
       }
     },
+    computed: {
+      routeSections() {
+        return this.routesBuilder.getSectionsFromPath(this.$route.fullPath)
+      }
+    },
     methods: {
+      linkableSection(section) {
+        return this.routesBuilder.getLinkableRouteFromPath(section.path)
+      },
+      subroutesOfSection(section) {
+        let subroutes = this.routesBuilder.getSubroutesOfPath(section.path)
+        if (subroutes.length > 0 && subroutes[0].path.endsWith('/')) subroutes = subroutes.splice(1)
+        return subroutes
+      },
       emptySubroutesFromRoute(section) {
         try {
           return section.children.map((category) => {

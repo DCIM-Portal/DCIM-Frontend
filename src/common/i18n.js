@@ -3,6 +3,7 @@ const translations = {
     tables: {
       attributes: {
         power_status: {
+          'null': 'N/A',
           on: 'On',
           off: 'Off'
         },
@@ -10,15 +11,32 @@ const translations = {
           success: 'Synchronized',
           in_progress: 'In Progress',
           unknown_error: 'Unknown Error',
-          stack_trace: 'Stack Trace',
+          stack_trace: 'Error: Other (stack trace)',
           smart_proxy_error: 'Smart Proxy Error',
-          connection_timeout_error: 'Connection Timeout',
-          invalid_credentials_error: 'Invalid Credentials',
-          invalid_username_error: 'Invalid Username',
-          invalid_password_error: 'Invalid Password',
-          unsupported_fru_error: 'Unsupported Fru',
-          session_timeout_error: 'Session Timeout',
-          bmc_busy_error: 'Bmc Busy'
+          smart_proxy_error: 'Error: Smart Proxy',
+          connection_timeout_error: 'Error: Connection timeout',
+          invalid_credentials_error: 'Error: Invalid credentials',
+          invalid_username_error: 'Error: Invalid username',
+          invalid_password_error: 'Error: Invalid password',
+          unsupported_fru_error: 'Error: Unsupported FRU',
+          session_timeout_error: 'Error: Session timeout',
+          bmc_busy_error: 'Error: BMC busy'
+        },
+        onboard_status: {
+          success: 'Complete',
+          in_progress: 'In Progress',
+          stack_trace: 'Error (stack trace)',
+          timeout: 'Timeout'
+        },
+        onboard_step: {
+          'null': 'Preparing to start',
+          complete: 'Finished',
+          shutdown: 'Shut down',
+          power_off: 'Power off',
+          pxe: 'PXE boot',
+          discover: 'Discover',
+          manage: 'Promote to managed',
+          bmc_creds: 'Save BMC login',
         }
       },
       application: {

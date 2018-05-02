@@ -1,5 +1,5 @@
 <template>
-  <div class="visual_dc">
+  <div class="visual_dc box has-shadow">
     <Scene
       v-model="scene"
       touch-action="none"
@@ -113,6 +113,8 @@
   }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.box {
+  padding: 0;
+}
 </style>

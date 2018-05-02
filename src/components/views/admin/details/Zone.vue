@@ -31,10 +31,13 @@
     },
     watch: {
       rawApiData() {
-        this.$store.commit('setPageSubtitle', `${this.$options.name} ${this.rawApiData.data.name}`)
+        this.$store.commit('setPageSubtitle', `${this.rawApiData.data.name}`)
       }
     }
   }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
+div {
+  height: calc(100vh - 220px);
+}
 </style>

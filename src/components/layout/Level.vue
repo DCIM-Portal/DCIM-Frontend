@@ -41,7 +41,7 @@ export default {
         else if (index === original.length - 1 && this.name)
           original[index].name = this.name
         else
-          original[index].name = route.path.split('/').reverse()[0]
+          original[index].name = `<h1>HI I AM WAITING TO LOAD</h1>`
         original[index].path += '/'
       })
       return ancestry

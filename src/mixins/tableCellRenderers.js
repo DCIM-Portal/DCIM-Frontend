@@ -5,9 +5,9 @@ export default {
       columnNameToType: {
         serial: this.boldText,
         power_status: this.powerTag,
-        sync_status: this.statusTag,
-        onboard_status: this.statusTag,
-        onboard_step: this.statusTag,
+        sync_status: this.syncStatusTag,
+        onboard_status: this.onboardRequestTag,
+        onboard_step: this.onboardStepTag,
         updated_at: this.dateTimeISO8601,
         created_at: this.dateTimeISO8601,
         brand: this.text,
@@ -54,14 +54,15 @@ export default {
             </span>N/A</span>`
       }
     },
-    statusTag(input) {
+    syncStatusTag(input) {
       switch(input) {
         case 'success':
-        case 'complete':
           return `<span class="tag is-success has-shadow">
             <span class="icon">
               <i class="mdi mdi-18px mdi-checkbox-marked-circle-outline"></i>
-            </span>${input}</span>`
+            </span>
+              ${this.$t('tables.attributes.sync_status.'+input, input)}
+            </span>`
           break
         case 'in_progress':
           return `<span class="tag is-info has-shadow">
@@ -73,18 +74,8 @@ export default {
                 r="20"
                 fill="none"
                 stroke-width="5"/>
-            </svg>${input}</span>`
-          break
-        case 'shutdown':
-        case 'power_off':
-        case 'pxe':
-        case 'discover':
-        case 'manage':
-        case 'bmc_creds':
-          return `<span class="tag is-info has-shadow">
-            <span class="icon">
-              <i class="mdi mdi-18px mdi-information-outline"></i>
-            </span>${input}</span>`
+            </svg>
+            ${this.$t('tables.attributes.sync_status.'+input, input)}</span>`
           break
         case null:
           return `<span class="tag has-shadow">
@@ -95,8 +86,65 @@ export default {
         default:
           return `<span class="tag is-danger has-shadow">
             <span class="icon">
+              <i class="mdi mdi-18px mdi-alert"></i>
+            </span>
+              ${this.$t('tables.attributes.sync_status.'+input, input)}
+            </span>`
+      }
+    },
+    onboardRequestTag(input) {
+      switch(input) {
+        case 'success':
+          return `<span class="tag is-success has-shadow">
+            <span class="icon">
+              <i class="mdi mdi-18px mdi-checkbox-marked-circle-outline"></i>
+            </span>
+              ${this.$t('tables.attributes.onboard_status.'+input, input)}
+            </span>`
+          break
+        case 'in_progress':
+          return `<span class="tag is-info has-shadow">
+            <svg class="progress-spinner" viewBox="0 0 50 50">
+              <circle
+                class="path"
+                cx="25"
+                cy="25"
+                r="20"
+                fill="none"
+                stroke-width="5"/>
+            </svg>
+            ${this.$t('tables.attributes.onboard_status.'+input, input)}</span>`
+          break
+        case null:
+          return `<span class="tag has-shadow">
+            <span class="icon">
               <i class="mdi mdi-18px mdi-minus-circle-outline"></i>
-            </span>${input}</span>`
+            </span>Not Onboarded</span>`
+          break
+      default:
+        return `<span class="tag is-danger has-shadow">
+          <span class="icon">
+            <i class="mdi mdi-18px mdi-alert"></i>
+          </span>
+            ${this.$t('tables.attributes.onboard_status.'+input, input)}
+          </span>`
+      }
+    },
+    onboardStepTag(input) {
+      switch(input) {
+        case null:
+          return `<span class="tag has-shadow">
+            <span class="icon">
+              <i class="mdi mdi-18px mdi-minus-circle-outline"></i>
+            </span>N/A</span>`
+          break
+        default:
+          return `<span class="tag is-info has-shadow">
+            <span class="icon">
+              <i class="mdi mdi-18px mdi-information-outline"></i>
+            </span>
+              ${this.$t('tables.attributes.onboard_step.'+input, input)}
+            </span>`
       }
     }
   }

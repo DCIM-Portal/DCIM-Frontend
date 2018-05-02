@@ -2,35 +2,42 @@
   <div class="navbar-dropdown">
     <div class="container is-fluid">
       <app-menu-content>
-        <!-- Child slot -->
+        <!-- menu-content -->
         <div slot="menu-content" class="column"
-             v-for="section in routeSections"
-             :key="section.title"
-        >
-          <h1 class="title is-6 is-mega-menu-title">
+          v-for="section in routeSections"
+          :key="section.title">
+          <div class="column-wrapper">
+            <h1 v-if="!section.info" class="title is-6 is-mega-menu-title">
+              <router-link
+                :to="linkableSection(section)"
+                v-if="linkableSection(section)"
+                @click.native="toggleMenu">
+                {{ section.title }}
+              </router-link>
+            </h1>
+
             <router-link
+              class="navbar-item"
+              v-if="(section.info && section.title)"
               :to="linkableSection(section)"
-              v-if="linkableSection(section)"
-              @click.native="toggleMenu"
-            >
-              {{ section.title }}
+              @click.native="toggleMenu">
+              <div class="navbar-content">
+                <p class="has-text-info">{{ section.title }}</p>
+                <small>{{ section.info }}</small>
+              </div>
             </router-link>
-            <span
-              v-else>
-              {{ section.title }}
-            </span>
-          </h1>
-          <router-link class="navbar-item"
-                       v-for="category in subroutesOfSection(section)"
-                       :to="category"
-                       :key="category.title"
-                       @click.native="toggleMenu"
-                       exact>
-            <div class="navbar-content">
-              <p class="has-text-info">{{ category.title }}</p>
-              <small>{{ category.info }}</small>
-            </div>
-          </router-link>
+            <router-link class="navbar-item"
+              v-for="category in subroutesOfSection(section)"
+              :to="category"
+              :key="category.title"
+              @click.native="toggleMenu"
+              exact>
+              <div class="navbar-content">
+                <p class="has-text-info">{{ category.title }}</p>
+                <small>{{ category.info }}</small>
+              </div>
+            </router-link>
+          </div>
         </div>
 
       </app-menu-content>
@@ -86,6 +93,35 @@
   .hero.is-info a.navbar-item:hover {
     background-color: #f5f5f5;
   }
+  .column:first-child {
+    a.navbar-item {
+      //padding-top: 50px;
+      font-size: 1.4em;
+      padding-right: 0.5rem;
+      padding-left: 0;
+      .navbar-content {
+        line-height: 1em;
+        padding: 1em;
+        small {
+          font-size: 0.775rem;
+        }
+      }
+      .navbar-content:hover {
+        background-color: #f5f5f5;
+      }
+    }
+    a.navbar-item:hover {
+      background-color: transparent;
+    }
+  }
+  .column-wrapper {
+    height: 100%;
+    padding-right: 1.6em;
+    border-right: 3px solid whitesmoke;
+  }
+  .column:last-child .column-wrapper {
+    border-right: none;
+  }
 
   // IE fix for columns in mobile view
   @media only screen and (max-width: 1024px) {
@@ -109,6 +145,9 @@
     }
     .hero.is-info a.navbar-item:hover {
       background-color: #f5f5f521;
+    }
+    .column-wrapper {
+      border-right: none;
     }
   }
 </style>

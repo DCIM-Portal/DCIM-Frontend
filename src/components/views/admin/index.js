@@ -4,7 +4,7 @@ import Admin from './Index'
 // Admin Sections
 import ScanOnboard from './sections/ScanOnboard'
 import Assets from './sections/Asset'
-import ZonesRacks from './sections/ZoneRack'
+import Organization from './sections/Organization'
 
 // Admin Categories
 import Zones from './categories/Zones'
@@ -14,6 +14,7 @@ import Racks from './categories/Racks'
 import Credentials from './categories/Credentials'
 import OnboardRequests from './categories/OnboardRequests'
 import ScanRequests from './categories/ScanRequests'
+import Systems from './categories/Systems'
 
 // Admin Details
 import Zone from './details/Zone'
@@ -22,6 +23,7 @@ export {
   Admin,
   Zones,
   BmcHosts,
+  Systems,
   Enclosures,
   Racks,
   Credentials,
@@ -29,7 +31,6 @@ export {
   ScanRequests,
   ScanOnboard,
   Assets,
-  ZonesRacks,
-  // Detail Zone View
+  Organization,
   Zone,
 }

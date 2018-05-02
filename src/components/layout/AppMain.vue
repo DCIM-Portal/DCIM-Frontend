@@ -27,7 +27,7 @@ export default {
 </script>
 
 <style lang="scss">
-.app-main {
-  padding-top: 1rem;
-}
+  .app-main {
+    padding-top: 1rem;
+  }
 </style>

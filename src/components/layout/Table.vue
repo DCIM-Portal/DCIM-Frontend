@@ -59,9 +59,17 @@
         group-multiline
         class="table-level has-addons">
         <div class="control table-button is-flex">
-          <b-field label="Start IP" class="is-paddingless">
+          <b-field label="Start IP">
+            <b-input
+              v-model="startIP"
+              placeholder="Start IP Address"
+              pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"/>
           </b-field>
-          <b-field label="End IP" class="is-paddingless">
+          <b-field label="End IP">
+            <b-input
+              v-model="endIP"
+              placeholder="End IP Address"
+              pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"/>
           </b-field>
         </div>
       </b-field>
@@ -163,6 +171,10 @@
 </template>
 
 <script>
+let ip = require('ip-address')
+let ipv4 = ip.Address4;
+// let start_ip = new ipv4('10.246.0.205')
+// console.log(start_ip.bigInteger()[0])
 import Multiselect from 'vue-multiselect'
 import ApiService from '@/common/api.service'
 import ApplicationTable from '@/components/lib/Table/ApplicationTable'
@@ -226,7 +238,9 @@ export default {
         minDate: this.minDate
       },
       minDate: null,
-      maxDate: null
+      maxDate: null,
+      startAddress: null,
+      endAddress: null
     }
   },
   computed: {
@@ -289,6 +303,32 @@ export default {
         }
         return this.value
       }
+    },
+    startIP: {
+      get () {
+        return this.value
+      },
+      set(newVal) {
+        this.value = newVal
+        let ipInst = new ipv4(newVal)
+        if (ipInst.isValid()) {
+          this.startAddress = ipInst.bigInteger()[0]
+          this.fetchCollection()
+        }
+      }
+    },
+    endIP: {
+      get () {
+        return this.value
+      },
+      set(newVal) {
+        this.value = newVal
+        let ipInst = new ipv4(newVal)
+        if (ipInst.isValid()) {
+          this.endAddress = ipInst.bigInteger()[0]
+          this.fetchCollection()
+        }
+      }
     }
   },
   methods: {
@@ -336,12 +376,16 @@ export default {
         })
       })
       if (this.minDate) {
-        filters['min_date'] = []
-        filters['min_date'].push(`updated_at>=${this.minDate}`)
+        filters['min_date'] = [`updated_at>=${this.minDate}`]
       }
       if (this.maxDate) {
-        filters['max_date'] = []
-        filters['max_date'].push(`updated_at<=${this.maxDate}`)
+        filters['max_date'] = [`updated_at<=${this.maxDate}`]
+      }
+      if (this.startAddress) {
+        filters['start_address'] = [`ip_address>=${this.startAddress}`]
+      }
+      if (this.endAddress) {
+        filters['end_address'] = [`ip_address<=${this.endAddress}`]
       }
       params['filters'] = filters
       if (this.searchQuery && !(/^\s*$/.test(this.searchQuery))) {

@@ -1,6 +1,13 @@
 .field:not(:last-child) {
   margin-bottom: 0.45rem;
 }
+div.table-level.top-controls {
+  .help {
+    position: absolute;
+    top: -20px;
+    left: 3.85em;
+  }
+}
 div.table-level.field.has-addons {
   position: relative;
   .control:first-child .button {
@@ -31,12 +38,6 @@ div.table-level.field.has-addons {
       border-radius: 0;
     }
   }
-  .help {
-    font-size: 0.75rem;
-    position: absolute;
-    top: -20px;
-    left: 3.85em;
-  }
   .control.table-button {
     margin-right: 10px;
     .button {
@@ -45,9 +46,16 @@ div.table-level.field.has-addons {
         font-size: 18px;
       }
     }
-    .button:focus {
+    .button:active {
       border-color: transparent;
       box-shadow: 0 0 0 0.125em rgba(0, 0, 0, 0.12);
+      transform: translateY(1px);
+    }
+    .button:focus {
+      border-color: transparent;
+    }
+    .button:focus:not(:active) {
+      box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     }
   }
   .control.actions {

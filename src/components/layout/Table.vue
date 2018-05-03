@@ -20,7 +20,7 @@
         <!-- Magic Search -->
         <div class="control is-absolute-right">
           <b-input
-            v-model="localSearchQuery"
+            v-model="searchQuery"
             placeholder="Search..."
             type="search"
             icon="magnify"
@@ -59,17 +59,21 @@
         group-multiline
         class="table-level has-addons">
         <div class="control table-button is-flex">
-          <b-field label="Start IP">
+          <b-field label="Start IP" :type="startIpFieldType">
+            <p v-if="validStartIp" class="is-danger help ip">
+              Please input a valid IP
+            </p>
             <b-input
-              v-model="startIP"
-              placeholder="Start IP Address"
-              pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"/>
+              v-model="rawStartIp"
+              placeholder="Start IP Address"/>
           </b-field>
-          <b-field label="End IP">
+          <b-field label="End IP" :type="endIpFieldType">
+            <p v-if="validEndIp" class="is-danger help ip">
+              Please input a valid IP
+            </p>
             <b-input
-              v-model="endIP"
-              placeholder="End IP Address"
-              pattern="((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"/>
+              v-model="rawEndIp"
+              placeholder="End IP Address"/>
           </b-field>
         </div>
       </b-field>
@@ -82,14 +86,14 @@
         <div class="control table-button is-flex">
           <b-field label="Start Date" class="is-paddingless">
             <flat-pickr
-              v-model="pickMinDate"
+              v-model="minDate"
               :config="pickrConfigMin"
               @on-change="onStartChange"
               placeholder="Select start date..."/>
           </b-field>
           <b-field label="End Date" class="is-paddingless">
             <flat-pickr
-              v-model="pickMaxDate"
+              v-model="maxDate"
               :config="pickrConfigMax"
               @on-change="onEndChange"
               placeholder="Select end date..."/>
@@ -173,8 +177,6 @@
 <script>
 let ip = require('ip-address')
 let ipv4 = ip.Address4;
-// let start_ip = new ipv4('10.246.0.205')
-// console.log(start_ip.bigInteger()[0])
 import Multiselect from 'vue-multiselect'
 import ApiService from '@/common/api.service'
 import ApplicationTable from '@/components/lib/Table/ApplicationTable'
@@ -216,7 +218,6 @@ export default {
       perPageOptions: [],
       perPageFieldType: undefined,
       searchQuery: '',
-      localSearchQuery: '',
       checkedRows: {},
       fetchCollectionCancelSource: ApiService.cancelToken(),
       sortOrder: this.orderDirection,
@@ -228,22 +229,44 @@ export default {
         dateFormat: 'Z',
         altInput: true,
         altFormat: 'F j Y, h:iK',
-        maxDate: this.maxDate
+        maxDate: null
       },
       pickrConfigMax: {
         enableTime: true,
         dateFormat: 'Z',
         altInput: true,
         altFormat: 'F j Y, h:iK',
-        minDate: this.minDate
+        minDate: null
       },
       minDate: null,
       maxDate: null,
-      startAddress: null,
-      endAddress: null
+      rawStartIp: null,
+      rawEndIp: null
     }
   },
   computed: {
+    filters() {
+      let filters = {}
+      Object.keys(this.filterSelections).forEach((column_name) => {
+        filters[column_name] = []
+        this.filterSelections[column_name].forEach((filter) => {
+          filters[column_name].push(`${column_name}=${filter}`)
+        })
+      })
+      if (this.minDate) {
+        filters['min_date'] = [`updated_at>=${this.minDate}`]
+      }
+      if (this.maxDate) {
+        filters['max_date'] = [`updated_at<=${this.maxDate}`]
+      }
+      if (this.startIp) {
+        filters['start_address'] = [`ip_address>=${this.startIp}`]
+      }
+      if (this.endIp) {
+        filters['end_address'] = [`ip_address<=${this.endIp}`]
+      }
+      return JSON.stringify(filters)
+    },
     searchableColumns() {
       if (this.tableStructure.length) {
         return this.columns.filter(column => {
@@ -278,60 +301,48 @@ export default {
       }
       return output
     },
-    pickMinDate: {
-      get () {
-        return this.value
-      },
-      set(newVal) {
-        this.value = newVal
-        this.minDate = newVal
-        if (newVal) {
-          this.fetchCollection()
-        }
-        return this.value
+    startIp() {
+      return this.ipToInt(this.rawStartIp)
+    },
+    validStartIp() {
+      return (this.rawStartIp && !this.startIp)
+    },
+    startIpFieldType() {
+      if (this.validStartIp) {
+        return "is-danger"
       }
     },
-    pickMaxDate: {
-      get () {
-        return this.value
-      },
-      set(newVal) {
-        this.value = newVal
-        this.maxDate = newVal
-        if (newVal) {
-          this.fetchCollection()
-        }
-        return this.value
+    endIp() {
+      return this.ipToInt(this.rawEndIp)
+    },
+    validEndIp() {
+      return (this.rawEndIp && !this.endIp)
+    },
+    endIpFieldType() {
+      if (this.validEndIp) {
+        return "is-danger"
       }
     },
-    startIP: {
-      get () {
-        return this.value
-      },
-      set(newVal) {
-        this.value = newVal
-        let ipInst = new ipv4(newVal)
-        if (ipInst.isValid()) {
-          this.startAddress = ipInst.bigInteger()[0]
-          this.fetchCollection()
-        }
+    ipRange() {
+      if (this.startIp && this.endIp && this.startIp > this.endIp ||
+      (!this.startIp && !this.endIp)) {
+        return false
       }
-    },
-    endIP: {
-      get () {
-        return this.value
-      },
-      set(newVal) {
-        this.value = newVal
-        let ipInst = new ipv4(newVal)
-        if (ipInst.isValid()) {
-          this.endAddress = ipInst.bigInteger()[0]
-          this.fetchCollection()
-        }
-      }
+      return JSON.stringify([this.startIp, this.endIp])
     }
   },
   methods: {
+    ipToInt(ip) {
+      try {
+        let ipInst = new ipv4(ip)
+        if (ipInst.isValid()) {
+          return ipInst.bigInteger()[0]
+        }
+      }
+      catch (error) {
+      }
+      return false
+    },
     onStartChange(selectedDates, dateStr, instance) {
       this.$set(this.pickrConfigMax, 'minDate', dateStr)
     },
@@ -368,26 +379,7 @@ export default {
         order: {}
       }
       params['order'][this.sortField] = this.sortOrder
-      let filters = {}
-      Object.keys(this.filterSelections).forEach((column_name) => {
-        filters[column_name] = []
-        this.filterSelections[column_name].forEach((filter) => {
-          filters[column_name].push(`${column_name}=${filter}`)
-        })
-      })
-      if (this.minDate) {
-        filters['min_date'] = [`updated_at>=${this.minDate}`]
-      }
-      if (this.maxDate) {
-        filters['max_date'] = [`updated_at<=${this.maxDate}`]
-      }
-      if (this.startAddress) {
-        filters['start_address'] = [`ip_address>=${this.startAddress}`]
-      }
-      if (this.endAddress) {
-        filters['end_address'] = [`ip_address<=${this.endAddress}`]
-      }
-      params['filters'] = filters
+      params['filters'] = JSON.parse(this.filters)
       if (this.searchQuery && !(/^\s*$/.test(this.searchQuery))) {
         params['search'] = {
           fields: this.searchableColumns.join(","),
@@ -440,6 +432,12 @@ export default {
     }
   },
   watch: {
+    filters() {
+      this.fetchCollectionCancelSource.cancel(
+        'Filters changed before server response'
+      )
+      this.fetchCollection()
+    },
     localPerPage(newValue) {
       if (parseInt(newValue) > 0) {
         this.perPage = newValue
@@ -454,24 +452,9 @@ export default {
         this.perPageFieldType = 'is-danger'
       }
     },
-    localSearchQuery(newValue) {
-      this.searchQuery = newValue
+    searchQuery() {
       this.fetchCollectionCancelSource.cancel(
         'New search requested before server response'
-      )
-      this.fetchCollection()
-    },
-    sortOrder(newValue) {
-      this.sortOrder = newValue
-      this.fetchCollectionCancelSource.cancel(
-        'New sort order requested before server response'
-      )
-      this.fetchCollection()
-    },
-    sortField(newValue) {
-      this.sortField = newValue
-      this.fetchCollectionCancelSource.cancel(
-        'New sort field requested before server response'
       )
       this.fetchCollection()
     },

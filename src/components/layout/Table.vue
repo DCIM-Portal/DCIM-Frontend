@@ -33,10 +33,17 @@
         enter-active-class="fadeInDown"
         leave-active-class="fadeOutUp"
         :duration="320">
-        <b-field v-show="filtersToggled" custom-class="is-large" class="table-box has-shadow animated" label="Filters">
-          <b-field horizontal>
+        <b-field
+          v-show="filtersToggled"
+          custom-class="is-large"
+          class="table-box has-shadow animated"
+          label="Filters">
+          <b-field horizontal v-if="filterIp || filterDateType">
             <!-- IP Filter -->
-            <b-field grouped group-multiline>
+            <b-field
+              grouped
+              group-multiline
+              v-if="filterIp">
               <b-field
                 label="Start IP"
                 custom-class="is-small"
@@ -69,7 +76,10 @@
               </b-field>
             </b-field>
             <!-- Date Filter -->
-            <b-field grouped group-multiline>
+            <b-field
+              grouped
+              group-multiline
+              v-if="filterDateType">
               <b-field label="Start Date">
                 <flat-pickr
                   v-model="minDate"
@@ -141,7 +151,7 @@
       </transition>
       <!-- Filter button -->
       <b-field grouped group-multiline class="table-level">
-        <p class="control">
+        <p class="control" v-if="hasFilters">
           <button
             class="button is-grey has-shadow"
             @click="toggleFilters"
@@ -224,6 +234,18 @@ export default {
     orderDirection: {
       type: String,
       default: 'desc'
+    },
+    filterDateType: {
+      type: String,
+      default: null
+    },
+    filterIp: {
+      type: Boolean,
+      default: false
+    },
+    hasFilters: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
@@ -275,10 +297,10 @@ export default {
         })
       })
       if (this.minDate) {
-        filters['min_date'] = [`updated_at>=${this.minDate}`]
+        filters['min_date'] = this.dateFilter(this.filterDateType, this.minDate)
       }
       if (this.maxDate) {
-        filters['max_date'] = [`updated_at<=${this.maxDate}`]
+        filters['max_date'] = this.dateFilter(this.filterDateType, this.maxDate)
       }
       if (this.startIp) {
         filters['start_address'] = [`ip_address>=${this.startIp}`]
@@ -353,6 +375,17 @@ export default {
     }
   },
   methods: {
+    dateFilter(type, date) {
+      if (this.minDate !== this.maxDate) {
+        if (date === this.minDate) {
+          return [`${type}>=${date}`]
+        } else if (date === this.maxDate ) {
+          return [`${type}<=${date}`]
+        }
+      } else if (this.minDate === this.maxDate) {
+        return [`${type}=${date}`]
+      }
+    },
     toggleFilters() {
       this.filtersToggled = !this.filtersToggled
     },

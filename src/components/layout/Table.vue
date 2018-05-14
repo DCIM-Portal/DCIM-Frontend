@@ -1,175 +1,195 @@
 <template>
   <section>
-    <div class="box has-shadow">
+    <div class="box has-shadow table-level">
       <!--Top Controls -->
-      <b-field
-        group-multiline
-        class="table-level top-controls">
-        <!-- Per Page -->
-        <b-field :type="perPageFieldType">
-          <div class="control is-flex">
-            <label class="label">Per Page</label>
-            <b-autocomplete
-              v-model="localPerPage"
-              :data="perPageOptions"
-              :placeholder="perPage"
-              type="number"
-              @input="generatePerPageSuggestions"/>
+      <b-field grouped group-multiline>
+        <div class="top-level">
+          <!-- Per Page -->
+          <b-field :type="perPageFieldType">
+            <div class="control is-flex">
+              <label class="label">Per Page</label>
+              <b-autocomplete
+                v-model="localPerPage"
+                :data="perPageOptions"
+                :placeholder="perPage"
+                type="number"
+                @input="generatePerPageSuggestions"/>
+            </div>
+          </b-field>
+          <!-- Magic Search -->
+          <div class="control flex-is-right">
+            <b-input
+              v-model="searchQuery"
+              placeholder="Search..."
+              type="search"
+              icon="magnify"
+              />
           </div>
-        </b-field>
-        <!-- Magic Search -->
-        <div class="control is-absolute-right">
-          <b-input
-            v-model="searchQuery"
-            placeholder="Search..."
-            type="search"
-            icon="magnify"
-            />
         </div>
       </b-field>
-      <!-- Table control buttons -->
-      <b-field
-      group-multiline
-      class="table-level">
+      <!-- Filters -->
+      <transition
+        name="filter"
+        enter-active-class="fadeInDown"
+        leave-active-class="fadeOutUp"
+        :duration="320">
+        <b-field v-show="filtersToggled" custom-class="is-large" class="table-box has-shadow animated" label="Filters">
+          <b-field horizontal>
+            <!-- IP Filter -->
+            <b-field grouped group-multiline>
+              <b-field
+                label="Start IP"
+                custom-class="is-small"
+                :type="startIpFieldType">
+                <p v-if="validStartIp" class="is-danger help ip">
+                  Please input a valid IP
+                </p>
+                <b-input
+                  v-model="rawStartIp"
+                  placeholder="Start IP Address"/>
+              </b-field>
+              <b-field
+                label="End IP"
+                custom-class="is-small"
+                :type="endIpFieldType">
+                <p v-if="validEndIp" class="is-danger help ip">
+                  Please input a valid IP
+                </p>
+                <b-input
+                  v-model="rawEndIp"
+                  placeholder="End IP Address"/>
+              </b-field>
+              <b-field class="filter-button">
+                <button
+                  class="button is-grey has-shadow"
+                  @click="clearIps">
+                  <b-icon icon="close"/>
+                  <span>Clear IPs</span>
+                </button>
+              </b-field>
+            </b-field>
+            <!-- Date Filter -->
+            <b-field grouped group-multiline>
+              <b-field label="Start Date">
+                <flat-pickr
+                  v-model="minDate"
+                  :config="pickrConfigMin"
+                  @on-change="onStartChange"
+                  placeholder="Select start date..."/>
+              </b-field>
+              <b-field label="End Date">
+                <flat-pickr
+                  v-model="maxDate"
+                  :config="pickrConfigMax"
+                  @on-change="onEndChange"
+                  placeholder="Select end date..."/>
+              </b-field>
+              <b-field class="filter-button">
+                <button
+                  class="button is-grey has-shadow"
+                  @click="clearDates">
+                  <b-icon icon="close"/>
+                  <span>Clear Dates</span>
+                </button>
+              </b-field>
+            </b-field>
+          </b-field>
+          <!-- Enum Filters -->
+          <div class="enum-filters">
+            <b-field
+              v-for="enumFilter in filterableEnums"
+              :key="enumFilter.name"
+              :label="$t('tables.'+tableType+'.'+enumFilter.name,
+                $t('tables.application.'+enumFilter.name, enumFilter.name))">
+              <div>
+                <multiselect
+                  :options="Object.keys(enumFilter.enums)"
+                  :customLabel=
+                    "opt=>
+                      $t('tables.attributes.'+enumFilter.name+'.'+opt,
+                      opt)"
+                  :multiple="true"
+                  :searchable="false"
+                  :limit="2"
+                  :close-on-select="false"
+                  :hide-selected="false"
+                  placeholder="Select Filter"
+                  :showLabels="false"
+                  :optionHeight="10"
+                  v-model="filterSelections[enumFilter.name]"
+                  class="has-shadow">
+                  <template slot="tag" slot-scope="props">
+                    <span class="tag is-success has-shadow">
+                      <span>
+                        {{
+                          $t('tables.attributes.'+enumFilter.name+
+                          '.'+props.option, props.option)
+                        }}
+                      </span>
+                      <span
+                        class="custom__remove"
+                        @click="props.remove(props.option)">
+                        ❌
+                      </span>
+                    </span>
+                  </template>
+                </multiselect>
+              </div>
+            </b-field>
+          </div>
+        </b-field>
+      </transition>
+      <!-- Filter button -->
+      <b-field grouped group-multiline class="table-level">
+        <p class="control">
+          <button
+            class="button is-grey has-shadow"
+            @click="toggleFilters"
+            :class="{'is-pressed': filtersToggled}">
+            <b-icon icon="filter-variant"></b-icon>
+            <span>Filters</span>
+          </button>
+        </p>
         <!-- Clear selection -->
-        <p class="control table-button">
+        <p class="control">
           <button class="button is-grey has-shadow">
-              <b-icon icon="minus-box"></b-icon>
-              <span class="is-hidden-mobile">De-select All</span>
+            <b-icon icon="minus-box"></b-icon>
+            <span>De-select All</span>
           </button>
         </p>
         <!-- Copy button -->
-        <p class="control table-button">
+        <p class="control">
           <button class="button is-grey has-shadow">
-              <b-icon icon="clipboard-text"></b-icon>
-              <span class="is-hidden-mobile">Copy to Clipboard</span>
+            <b-icon icon="clipboard-text"></b-icon>
+            <span>Copy to Clipboard</span>
           </button>
         </p>
         <!-- Excel button -->
-        <p class="control table-button">
+        <p class="control">
           <button class="button is-grey has-shadow">
-              <b-icon icon="file-excel"></b-icon>
-              <span class="is-hidden-mobile">Save to Excel</span>
+            <b-icon icon="file-excel"></b-icon>
+            <span>Save to Excel</span>
           </button>
         </p>
-    </b-field>
-    <!-- IP Filter -->
-    <div class="filters">
-      <b-field
-        group-multiline
-        class="table-level has-addons">
-        <div class="control table-button is-flex">
-          <b-field label="Start IP" :type="startIpFieldType">
-            <p v-if="validStartIp" class="is-danger help ip">
-              Please input a valid IP
-            </p>
-            <b-input
-              v-model="rawStartIp"
-              placeholder="Start IP Address"/>
-          </b-field>
-          <b-field label="End IP" :type="endIpFieldType">
-            <p v-if="validEndIp" class="is-danger help ip">
-              Please input a valid IP
-            </p>
-            <b-input
-              v-model="rawEndIp"
-              placeholder="End IP Address"/>
-          </b-field>
-        </div>
       </b-field>
-    </div>
-    <!-- Date Filter -->
-    <div class="filters">
-      <b-field
-        group-multiline
-        class="table-level has-addons">
-        <div class="control table-button is-flex">
-          <b-field label="Start Date" class="is-paddingless">
-            <flat-pickr
-              v-model="minDate"
-              :config="pickrConfigMin"
-              @on-change="onStartChange"
-              placeholder="Select start date..."/>
-          </b-field>
-          <b-field label="End Date" class="is-paddingless">
-            <flat-pickr
-              v-model="maxDate"
-              :config="pickrConfigMax"
-              @on-change="onEndChange"
-              placeholder="Select end date..."/>
-          </b-field>
-          <button
-            class="button is-grey has-shadow is-centered push-down"
-            @click="clearDates">
-            <b-icon icon="close"/>
-            <span class="is-hidden-mobile">Clear Dates</span>
-          </button>
-        </div>
-      </b-field>
-    </div>
-    <!-- Enum Filters -->
-    <div class="filters">
-      <b-field
-        v-for="enumFilter in filterableEnums"
-        :key="enumFilter.name"
-        :label="$t('tables.'+tableType+'.'+enumFilter.name,
-          $t('tables.application.'+enumFilter.name, enumFilter.name))">
-        <div>
-          <multiselect
-            :options="Object.keys(enumFilter.enums)"
-            :customLabel=
-              "opt=>
-                $t('tables.attributes.'+enumFilter.name+'.'+opt,
-                opt)"
-            :multiple="true"
-            :searchable="false"
-            :limit="2"
-            :close-on-select="false"
-            :hide-selected="false"
-            placeholder="Select Filter"
-            :showLabels="false"
-            :optionHeight="10"
-            v-model="filterSelections[enumFilter.name]"
-            class="has-shadow">
-            <template slot="tag" slot-scope="props">
-              <span class="tag is-success has-shadow">
-                <span>
-                  {{
-                    $t('tables.attributes.'+enumFilter.name+
-                    '.'+props.option, props.option)
-                  }}
-                </span>
-                <span
-                  class="custom__remove"
-                  @click="props.remove(props.option)">
-                  ❌
-                </span>
-              </span>
-            </template>
-          </multiselect>
-        </div>
-      </b-field>
-    </div>
-
-    <!-- Table -->
-    <b-table
-      striped
-      hoverable
-      mobile-cards
-      :table-type="tableType"
-      :rows="data"
-      :columns="columns"
-      :records-count="recordsCount"
-      :loading="loading"
-      paginated
-      :pages-count="pagesCount"
-      :per-page="perPage"
-      @page-change="onPageChange"
-      :sortField.sync="sortField"
-      :sortOrder.sync="sortOrder"
-      checkable
-      />
-
+      <!-- Table -->
+      <b-table
+        striped
+        hoverable
+        mobile-cards
+        :table-type="tableType"
+        :rows="data"
+        :columns="columns"
+        :records-count="recordsCount"
+        :loading="loading"
+        paginated
+        :pages-count="pagesCount"
+        :per-page="perPage"
+        @page-change="onPageChange"
+        :sortField.sync="sortField"
+        :sortOrder.sync="sortOrder"
+        checkable
+        />
     </div>
   </section>
 </template>
@@ -241,7 +261,8 @@ export default {
       minDate: null,
       maxDate: null,
       rawStartIp: null,
-      rawEndIp: null
+      rawEndIp: null,
+      filtersToggled: false
     }
   },
   computed: {
@@ -332,6 +353,9 @@ export default {
     }
   },
   methods: {
+    toggleFilters() {
+      this.filtersToggled = !this.filtersToggled
+    },
     ipToInt(ip) {
       try {
         let ipInst = new ipv4(ip)
@@ -355,6 +379,13 @@ export default {
         this.maxDate = null
         this.$set(this.pickrConfigMax, 'minDate', null)
         this.$set(this.pickrConfigMin, 'maxDate', null)
+        this.fetchCollection()
+      }
+    },
+    clearIps() {
+      if (this.rawEndIp || this.rawStartIp) {
+        this.rawEndIp = null
+        this.rawStartIp = null
         this.fetchCollection()
       }
     },
@@ -476,4 +507,36 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
+// Fade in down
+.fadeInDown {
+  -webkit-animation-name: fadeInDown;
+  animation-name: fadeInDown;
+}
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    max-height: 0px;
+  }
+  to {
+    opacity: 1;
+    max-height: 400px;
+  }
+}
+
+// Fade out up
+.fadeOutUp {
+  -webkit-animation-name: fadeOutUp;
+  animation-name: fadeOutUp;
+}
+@keyframes fadeOutUp {
+  from {
+    opacity: 1;
+    max-height: 400px;
+  }
+  to {
+    opacity: 0;
+    max-height: 0px;
+  }
+}
 </style>

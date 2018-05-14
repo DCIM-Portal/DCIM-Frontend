@@ -135,10 +135,19 @@
     color: #35495e;
     background-color: #eaeaea;
   }
+  .button.is-pressed {
+    border-color: transparent;
+    color: #35495e;
+    box-shadow: 0 0 0 0.125em rgba(0, 0, 0, 0.12) !important;
+    background-color: #e2e2e2;
+  }
   .is-centered {
     align-self: center;
   }
   .push-down {
     margin-top: 1em;
+  }
+  .flex-is-right {
+    margin-left: auto;
   }
 </style>

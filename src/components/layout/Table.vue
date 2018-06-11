@@ -30,46 +30,50 @@
       <!-- Filters -->
       <transition
         name="filter"
-        enter-active-class="fadeInDown"
-        leave-active-class="fadeOutUp"
-        :duration="320">
+        enter-active-class="filterDown"
+        leave-active-class="filterUp"
+        :duration="300">
         <b-field
           v-show="filtersToggled"
           custom-class="is-large"
           class="table-box has-shadow animated"
           label="Filters">
-          <b-field horizontal v-if="filterIp || filterDateType">
+          <b-field horizontal v-if="filterableColumns.length">
             <!-- IP Filter -->
             <b-field
               grouped
               group-multiline
-              v-if="filterIp">
+              class="has-shadow"
+              v-for="columnName in filterableBinaries"
+              :label="$t('tables.'+tableType+'.'+columnName,
+                $t('tables.application.'+columnName, columnName))"
+              :key="columnName">
               <b-field
                 label="Start IP"
                 custom-class="is-small"
-                :type="startIpFieldType">
-                <p v-if="validStartIp" class="is-danger help ip">
+                :type="startIpFieldType(columnName)">
+                <p v-if="validStartIp(columnName)" class="is-danger help ip">
                   Please input a valid IP
                 </p>
                 <b-input
-                  v-model="rawStartIp"
+                  v-model="rawStartIp[columnName]"
                   placeholder="Start IP Address"/>
               </b-field>
               <b-field
                 label="End IP"
                 custom-class="is-small"
-                :type="endIpFieldType">
-                <p v-if="validEndIp" class="is-danger help ip">
+                :type="endIpFieldType(columnName)">
+                <p v-if="validEndIp(columnName)" class="is-danger help ip">
                   Please input a valid IP
                 </p>
                 <b-input
-                  v-model="rawEndIp"
+                  v-model="rawEndIp[columnName]"
                   placeholder="End IP Address"/>
               </b-field>
               <b-field class="filter-button">
                 <button
                   class="button is-grey has-shadow"
-                  @click="clearIps">
+                  @click="clearIps(columnName)">
                   <b-icon icon="close"/>
                   <span>Clear IPs</span>
                 </button>
@@ -79,25 +83,31 @@
             <b-field
               grouped
               group-multiline
-              v-if="filterDateType">
-              <b-field label="Start Date">
+              class="has-shadow"
+              v-for="columnName in filterableDates"
+              :label="$t('tables.'+tableType+'.'+columnName,
+                $t('tables.application.'+columnName, columnName))"
+              :key="columnName">
+              <b-field label="Start Date" custom-class="is-small">
                 <flat-pickr
-                  v-model="minDate"
-                  :config="pickrConfigMin"
-                  @on-change="onStartChange"
+                  v-model="minDate[columnName]"
+                  :config="pickrConfigMin(columnName)"
+                  :key="columnName+'_start'"
+                  @on-change="onStartChange($event, columnName)"
                   placeholder="Select start date..."/>
               </b-field>
-              <b-field label="End Date">
+              <b-field label="End Date" custom-class="is-small">
                 <flat-pickr
-                  v-model="maxDate"
-                  :config="pickrConfigMax"
-                  @on-change="onEndChange"
+                  v-model="maxDate[columnName]"
+                  :config="pickrConfigMax(columnName)"
+                  :key="columnName+'_end'"
+                  @on-change="onEndChange($event, columnName)"
                   placeholder="Select end date..."/>
               </b-field>
               <b-field class="filter-button">
                 <button
                   class="button is-grey has-shadow"
-                  @click="clearDates">
+                  @click="clearDates(columnName)">
                   <b-icon icon="close"/>
                   <span>Clear Dates</span>
                 </button>
@@ -211,7 +221,9 @@ import Multiselect from 'vue-multiselect'
 import ApiService from '@/common/api.service'
 import ApplicationTable from '@/components/lib/Table/ApplicationTable'
 import debounce from 'lodash/debounce'
+import isEqual from 'lodash/isEqual'
 import qs from 'qs'
+import moment from 'moment'
 export default {
   name: "Table",
   components: {
@@ -235,13 +247,9 @@ export default {
       type: String,
       default: 'desc'
     },
-    filterDateType: {
-      type: String,
-      default: null
-    },
-    filterIp: {
-      type: Boolean,
-      default: false
+    excludeFilterableColumns: {
+      type: Array,
+      default: () => []
     },
     hasFilters: {
       type: Boolean,
@@ -266,50 +274,18 @@ export default {
       sortField: this.orderField,
       filterSelections: {},
       tableStructure: [],
-      pickrConfigMin: {
-        enableTime: true,
-        dateFormat: 'Z',
-        altInput: true,
-        altFormat: 'F j Y, h:iK',
-        maxDate: null
-      },
-      pickrConfigMax: {
-        enableTime: true,
-        dateFormat: 'Z',
-        altInput: true,
-        altFormat: 'F j Y, h:iK',
-        minDate: null
-      },
-      minDate: null,
-      maxDate: null,
-      rawStartIp: null,
-      rawEndIp: null,
+      minDate: {},
+      maxDate: {},
+      rawStartIp: {},
+      rawEndIp: {},
+      startIp: {},
+      endIp: {},
+      pickrConfigsMin: {},
+      pickrConfigsMax: {},
       filtersToggled: false
     }
   },
   computed: {
-    filters() {
-      let filters = {}
-      Object.keys(this.filterSelections).forEach((column_name) => {
-        filters[column_name] = []
-        this.filterSelections[column_name].forEach((filter) => {
-          filters[column_name].push(`${column_name}=${filter}`)
-        })
-      })
-      if (this.minDate) {
-        filters['min_date'] = this.dateFilter(this.filterDateType, this.minDate)
-      }
-      if (this.maxDate) {
-        filters['max_date'] = this.dateFilter(this.filterDateType, this.maxDate)
-      }
-      if (this.startIp) {
-        filters['start_address'] = [`ip_address>=${this.startIp}`]
-      }
-      if (this.endIp) {
-        filters['end_address'] = [`ip_address<=${this.endIp}`]
-      }
-      return JSON.stringify(filters)
-    },
     searchableColumns() {
       if (this.tableStructure.length) {
         return this.columns.filter(column => {
@@ -322,8 +298,14 @@ export default {
     filterableColumns() {
       return this.columns.filter(
         column => !this.searchableColumns.includes(column) &&
-        ['ip_address', 'updated_at', 'created_at'].includes
+        !this.excludeFilterableColumns.includes(column)
       )
+    },
+    filterableDates() {
+      return this.filterableColumnTypes('datetime')
+    },
+    filterableBinaries() {
+      return this.filterableColumnTypes('binary')
     },
     filterableEnums() {
       let output = []
@@ -343,48 +325,62 @@ export default {
       catch (error) {
       }
       return output
-    },
-    startIp() {
-      return this.ipToInt(this.rawStartIp)
-    },
-    validStartIp() {
-      return (this.rawStartIp && !this.startIp)
-    },
-    startIpFieldType() {
-      if (this.validStartIp) {
-        return "is-danger"
-      }
-    },
-    endIp() {
-      return this.ipToInt(this.rawEndIp)
-    },
-    validEndIp() {
-      return (this.rawEndIp && !this.endIp)
-    },
-    endIpFieldType() {
-      if (this.validEndIp) {
-        return "is-danger"
-      }
-    },
-    ipRange() {
-      if (this.startIp && this.endIp && this.startIp > this.endIp ||
-      (!this.startIp && !this.endIp)) {
-        return false
-      }
-      return JSON.stringify([this.startIp, this.endIp])
     }
   },
   methods: {
-    dateFilter(type, date) {
-      if (this.minDate !== this.maxDate) {
-        if (date === this.minDate) {
-          return [`${type}>=${date}`]
-        } else if (date === this.maxDate ) {
-          return [`${type}<=${date}`]
-        }
-      } else if (this.minDate === this.maxDate) {
-        return [`${type}=${date}`]
+    filters() {
+      let filters = {}
+      Object.keys(this.filterSelections).forEach((column_name) => {
+        filters[column_name] = []
+        this.filterSelections[column_name].forEach((filter) => {
+          filters[column_name].push(`${column_name}=${filter}`)
+        })
+      })
+      Object.keys(this.minDate).forEach((column) => {
+        if (this.minDate[column])
+          filters[column + '_min_date'] =
+            [`${column}>=${this.minDate[column]}`]
+      })
+      Object.keys(this.maxDate).forEach((column) => {
+        if (this.maxDate[column])
+          filters[column + '_max_date'] =
+            [`${column}<=${this.maxDate[column]}`]
+      })
+      Object.keys(this.startIp).forEach((column) => {
+        if (this.startIp[column])
+          filters[column + '_start_address'] =
+            [`${column}>=${this.startIp[column]}`]
+      })
+      Object.keys(this.endIp).forEach((column) => {
+        if (this.endIp[column])
+          filters[column + '_end_address'] =
+            [`${column}<=${this.endIp[column]}`]
+      })
+      return JSON.stringify(filters)
+    },
+    validStartIp(column) {
+      return this.rawStartIp[column] && !this.startIp[column]
+    },
+    validEndIp(column) {
+      return this.rawEndIp[column] && !this.endIp[column]
+    },
+    startIpFieldType(column) {
+      if (this.validStartIp(column)) {
+        return "is-danger"
       }
+    },
+    endIpFieldType(column) {
+      if (this.validEndIp(column)) {
+        return "is-danger"
+      }
+    },
+    filterableColumnTypes(type) {
+      if (this.tableStructure.length) {
+        return this.filterableColumns.filter(column =>
+          this.columnToStructure(column).type === type
+        )
+      }
+      return null
     },
     toggleFilters() {
       this.filtersToggled = !this.filtersToggled
@@ -400,34 +396,58 @@ export default {
       }
       return false
     },
-    onStartChange(selectedDates, dateStr, instance) {
-      this.$set(this.pickrConfigMax, 'minDate', dateStr)
+    pickrConfigMin(column) {
+      if (!this.pickrConfigsMin[column]) {
+        this.$set(this.pickrConfigsMin, column, {
+          enableTime: true,
+          dateFormat: 'Z',
+          altInput: true,
+          altFormat: 'F j Y, h:iK',
+          maxDate: null
+        })
+      }
+      return this.pickrConfigsMin[column]
     },
-    onEndChange(selectedDates, dateStr, instance) {
-      this.$set(this.pickrConfigMin, 'maxDate', dateStr)
+    pickrConfigMax(column) {
+      if (!this.pickrConfigsMax[column]) {
+        this.$set(this.pickrConfigsMax, column, {
+          enableTime: true,
+          dateFormat: 'Z',
+          altInput: true,
+          altFormat: 'F j Y, h:iK',
+          minDate: null
+        })
+      }
+      return this.pickrConfigsMax[column]
     },
-    clearDates() {
-      if (this.minDate || this.maxDate) {
-        this.minDate = null
-        this.maxDate = null
-        this.$set(this.pickrConfigMax, 'minDate', null)
-        this.$set(this.pickrConfigMin, 'maxDate', null)
-        this.fetchCollection()
+    onStartChange(event, column) {
+
+      return function(selectedDates, dateStr, instance) {
+        console.log("THIS WORKS")
+        this.$set(this.pickrConfigsMax[column], 'minDate', dateStr)
       }
     },
-    clearIps() {
-      if (this.rawEndIp || this.rawStartIp) {
-        this.rawEndIp = null
-        this.rawStartIp = null
-        this.fetchCollection()
+    onEndChange(event, column) {
+      return function(selectedDates, dateStr, instance) {
+        this.$set(this.pickrConfigsMin[column], 'maxDate', dateStr)
       }
+    },
+    clearDates(column) {
+      this.minDate[column] = null
+      this.maxDate[column] = null
+      this.$set(this.pickrConfigsMax[column], 'minDate', null)
+      this.$set(this.pickrConfigsMin[column], 'maxDate', null)
+    },
+    clearIps(column) {
+      this.rawEndIp[column] = null
+      this.rawStartIp[column] = null
     },
     columnToStructure(column) {
       return this.tableStructure.find(item => item.name === column)
     },
     fetchStructure() {
       ApiService
-        .get(this.tableType + '/structure')
+        .get(this.$route.meta.apiPath + '/structure')
         .then(res => {
           this.tableStructure = res.data.data
         })
@@ -443,7 +463,7 @@ export default {
         order: {}
       }
       params['order'][this.sortField] = this.sortOrder
-      params['filters'] = JSON.parse(this.filters)
+      params['filters'] = JSON.parse(this.filters())
       if (this.searchQuery && !(/^\s*$/.test(this.searchQuery))) {
         params['search'] = {
           fields: this.searchableColumns.join(","),
@@ -496,12 +516,6 @@ export default {
     }
   },
   watch: {
-    filters() {
-      this.fetchCollectionCancelSource.cancel(
-        'Filters changed before server response'
-      )
-      this.fetchCollection()
-    },
     localPerPage(newValue) {
       if (parseInt(newValue) > 0) {
         this.perPage = newValue
@@ -531,6 +545,76 @@ export default {
         this.fetchCollection()
       },
       deep: true
+    },
+    minDate: {
+      handler(value) {
+        this.fetchCollectionCancelSource.cancel(
+          'Min date changed before server response'
+        )
+        this.fetchCollection()
+      },
+      deep: true
+    },
+    maxDate: {
+      handler(value) {
+        this.fetchCollectionCancelSource.cancel(
+          'Max date changed before server response'
+        )
+        this.fetchCollection()
+      },
+      deep: true
+    },
+    rawStartIp: {
+      handler(value) {
+        Object.keys(value).forEach((column) => {
+          let ip = this.ipToInt(value[column])
+          if (ip || column in this.startIp)
+            this.$set(this.startIp, column, ip)
+        })
+      },
+      deep: true
+    },
+    rawEndIp: {
+      handler(value) {
+        Object.keys(value).forEach((column) => {
+          let ip = this.ipToInt(value[column])
+          if (ip || column in this.endIp)
+            this.$set(this.endIp, column, ip)
+        })
+      },
+      deep: true
+    },
+    startIp: {
+      handler(value) {
+        this.fetchCollectionCancelSource.cancel(
+          'Start IP changed before server response'
+        )
+        this.fetchCollection()
+      },
+      deep: true
+    },
+    endIp: {
+      handler(value) {
+        this.fetchCollectionCancelSource.cancel(
+          'End IP changed before server response'
+        )
+        this.fetchCollection()
+      },
+      deep: true
+    },
+    sortOrder(newValue) {
+      this.sortOrder = newValue
+      this.fetchCollectionCancelSource.cancel(
+        'New sort order requested before server response'
+      )
+      this.fetchCollection()
+    },
+    sortField(newValue) {
+      this.sortField = newValue
+      this.fetchCollectionCancelSource.cancel(
+        'New sort field requested before server response'
+      )
+      this.fetchCollection()
     }
   },
   mounted() {
@@ -540,13 +624,12 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-
 // Fade in down
-.fadeInDown {
-  -webkit-animation-name: fadeInDown;
-  animation-name: fadeInDown;
+.filterDown {
+  -webkit-animation-name: filterDown;
+  animation-name: filterDown;
 }
-@keyframes fadeInDown {
+@keyframes filterDown {
   from {
     opacity: 0;
     max-height: 0px;
@@ -556,13 +639,12 @@ export default {
     max-height: 400px;
   }
 }
-
 // Fade out up
-.fadeOutUp {
-  -webkit-animation-name: fadeOutUp;
-  animation-name: fadeOutUp;
+.filterUp {
+  -webkit-animation-name: filterUp;
+  animation-name: filterUp;
 }
-@keyframes fadeOutUp {
+@keyframes filterUp {
   from {
     opacity: 1;
     max-height: 400px;

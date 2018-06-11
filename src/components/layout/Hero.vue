@@ -228,6 +228,7 @@ export default {
     margin-top: -0.3em;
     margin-left: 0.9rem;
     top: 50%;
+    right: 0.5em;
   }
 }
 // For bigger screens

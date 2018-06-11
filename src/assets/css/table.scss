@@ -79,6 +79,17 @@
   .field.is-grouped.is-grouped-multiline:last-child {
     margin-bottom: 0;
   }
+  .field-body .field .field.is-grouped.is-grouped-multiline {
+    padding: 1em;
+    label.label {
+      font-weight: 600;
+      margin-right: 10px;
+    }
+    label.label.is-small {
+      font-weight: 400;
+      margin-right: 0;
+    }
+  }
   .field.is-horizontal {
     display: flex;
   }

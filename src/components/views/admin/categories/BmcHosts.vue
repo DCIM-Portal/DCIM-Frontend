@@ -5,8 +5,6 @@
     :tableType="tableType"
     :orderField="orderField"
     :orderDirection="orderDirection"
-    :filterDateType="filterDateType"
-    :filterIp="filterIp"
     :hasFilters="hasFilters"
     />
   </div>
@@ -37,8 +35,6 @@ export default {
       ],
       orderField: "ip_address",
       orderDirection: "desc",
-      filterDateType: "updated_at",
-      filterIp: true,
       hasFilters: true
     }
   }

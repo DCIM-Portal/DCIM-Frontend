@@ -11,7 +11,7 @@ import '@/common/material-icons'
 import '@/common/vue-progressbar'
 import '@/common/i18n'
 import '@/common/vue-backtotop'
-import '@/common/visual_dc'
+import '@/common/visual-dc'
 
 // Import app and vuex store
 import App from './App'

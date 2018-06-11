@@ -146,6 +146,9 @@
     .hero.is-info a.navbar-item:hover {
       background-color: #f5f5f521;
     }
+    .column:first-child a.navbar-item .navbar-content:hover {
+      background-color: transparent;
+    }
     .column-wrapper {
       border-right: none;
     }

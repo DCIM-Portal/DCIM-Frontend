@@ -1,4 +1,4 @@
-import Catalog from './Index'
+import Catalog from './Index.vue'
 
 export {
   Catalog

@@ -11,7 +11,7 @@ import '@/common/material-icons'
 import '@/common/vue-progressbar'
 import '@/common/i18n'
 import '@/common/vue-backtotop'
-import '@/common/visual-dc'
+//import '@/common/visual-dc'
 
 // Import app and vuex store
 import App from './App'
@@ -28,9 +28,7 @@ router.afterEach((to, from) => {
 })
 
 new Vue({
-  el: '#app',
   router,
   store,
-  components: { App },
-  template: '<App/>'
-})
+  render: h => h(App)
+}).$mount('#app')

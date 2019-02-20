@@ -1,5 +1,5 @@
 // Main Admin Page
-import Admin from './Index'
+import Admin from './Index.vue'
 
 // Admin Sections
 import ScanOnboard from './sections/ScanOnboard'

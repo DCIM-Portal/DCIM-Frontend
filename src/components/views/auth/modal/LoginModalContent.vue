@@ -1,35 +1,6 @@
 <template>
   <div>
 
-    <div class="message-box">
-      <b-notification
-        :active.sync="needAuth"
-        type="is-info"
-        has-icon>
-        This page requires authentication.  Please login.
-      </b-notification>
-
-      <b-notification
-        :active.sync="lostAuth"
-        type="is-warning"
-        has-icon>
-        It appears you are no longer authenticated.  Please login.
-      </b-notification>
-
-      <b-notification
-        :active.sync="isLoginError"
-        has-icon
-        type="is-danger">
-        <div v-if="loginError == 'Timeout'">
-          {{ loginTimeout }}
-        </div>
-        <div v-else>
-          Login failed - please try again.&nbsp;
-          Response was {{ loginError.status }}: {{ loginError.statusText}}
-        </div>
-      </b-notification>
-    </div>
-
     <h1 class="title has-text-weight-light">Sign In</h1>
 
 
@@ -80,6 +51,35 @@
       </p>
 
     </form>
+
+    <div class="message-box">
+      <b-notification
+        :active.sync="needAuth"
+        type="is-info"
+        has-icon>
+        This page requires authentication.  Please login.
+      </b-notification>
+
+      <b-notification
+        :active.sync="lostAuth"
+        type="is-warning"
+        has-icon>
+        It appears you are no longer authenticated.  Please login.
+      </b-notification>
+
+      <b-notification
+        :active.sync="isLoginError"
+        has-icon
+        type="is-danger">
+        <div v-if="loginError == 'Timeout'">
+          {{ loginTimeout }}
+        </div>
+        <div v-else>
+          Login failed - please try again.&nbsp;
+          Response was {{ loginError.status }}: {{ loginError.statusText}}
+        </div>
+      </b-notification>
+    </div>
 
   </div>
 </template>
@@ -150,7 +150,6 @@ export default {
   max-height: 200px;
   height: 200px;
   display: table-cell;
-  vertical-align: bottom;
   padding-bottom: 20px;
   transition: all 0.25s;
   .notification {
@@ -158,27 +157,6 @@ export default {
     font-size: 1rem;
     font-weight: 300;
     z-index: 51;
-  }
-}
-// Message-box fixes for mobile views
-@media screen and (max-height: 800px) and (min-height: 710px) and (max-width: 769px) {
-  .message-box {
-    position: absolute;
-    bottom: 0;
-  }
-}
-@media screen and (max-height: 710px) and (min-height: 639px) and (max-width: 769px) {
-  .message-box {
-    position: absolute;
-    bottom: -70px;
-  }
-}
-@media screen and (max-height: 639px) {
-  .message-box {
-    position: relative;
-    height: auto;
-    margin-top: 20px;
-    display: inline-table;
   }
 }
 // A loading overlay for modal form

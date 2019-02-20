@@ -1,4 +1,4 @@
-import Documentation from './Index'
+import Documentation from './Index.vue'
 
 export {
   Documentation

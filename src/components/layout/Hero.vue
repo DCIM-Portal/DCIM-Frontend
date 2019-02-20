@@ -164,6 +164,9 @@ export default {
   }
 }
 // Mega Menu Styling
+.navbar, .navbar-menu, .navbar-start, .navbar-end {
+  display: flex;
+}
 .navbar-item.is-mega {
   transition: all 0.25s;
   position: static;
@@ -202,7 +205,24 @@ export default {
 .navbar-item.is-mega.rotate .navbar-link::after {
   -webkit-transform: rotate(135deg);
   transform: rotate(135deg);
-  margin-top: -0.1rem;
+}
+.navbar-link:not(.is-arrowless)::after {
+  border: 2px solid #3273dc;
+  border-right: 0;
+  border-top: 0;
+  content: " ";
+  display: block;
+  height: 0.5em;
+  pointer-events: none;
+  position: relative;
+  -webkit-transform: rotate(-45deg);
+  transform: rotate(-45deg);
+  -webkit-transform-origin: 35% 75%;
+  transform-origin: 35% 75%;
+  width: 0.5em;
+  margin-left: 0.5rem;
+  right: 0;
+  top: 0;
 }
 // Media customizations
 @media screen and (max-width: 1024px) {
@@ -211,24 +231,23 @@ export default {
     margin-bottom: 0;
     font-size: 0.9rem;
   }
-  .navbar-link::after {
-    border: 1px solid #3273dc;
-    border-right: 0;
-    border-top: 0;
-    content: " ";
-    display: block;
-    height: 0.5em;
-    pointer-events: none;
-    position: relative;
-    -webkit-transform: rotate(-45deg);
-    transform: rotate(-45deg);
-    -webkit-transform-origin: center;
-    transform-origin: center;
-    width: 0.5em;
-    margin-top: -0.3em;
-    margin-left: 0.9rem;
-    top: 50%;
-    right: 0.5em;
+}
+@media screen and (min-width: 1025px) {
+  .navbar-dropdown {
+    background-color: white;
+    border-bottom-left-radius: 6px;
+    border-bottom-right-radius: 6px;
+    border-top: 2px solid #dbdbdb;
+    -webkit-box-shadow: 0 8px 8px rgba(10, 10, 10, 0.1);
+    box-shadow: 0 8px 8px rgba(10, 10, 10, 0.1);
+    display: none;
+    font-size: 0.875rem;
+    left: 0;
+    min-width: 100%;
+    position: absolute;
+    top: 100%;
+    z-index: 20;
+    margin-left: -10px;
   }
 }
 // For bigger screens

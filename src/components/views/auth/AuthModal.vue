@@ -67,9 +67,9 @@ export default {
 .auth {
   position: absolute;
   top: 0;
-  right: 0;
+  right: 10px;
   padding: 0.8rem 1rem;
-  z-index: 5;
+  z-index: 31;
   .button {
     height: 25px;
     font-size: 0.8rem;
@@ -78,6 +78,11 @@ export default {
 @media screen and (max-width: 1024px) {
   .auth {
     padding: 0.65rem 1rem;
+  }
+}
+@media screen and (max-width: 345px) {
+  .auth {
+    position: relative;
   }
 }
 </style>

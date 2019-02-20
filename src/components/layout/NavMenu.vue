@@ -122,6 +122,9 @@
   .column:last-child .column-wrapper {
     border-right: none;
   }
+  .hero a[data-v-29082aa6]:not(.button):not(.dropdown-item):not(.tag) {
+    color: black;
+  }
 
   // IE fix for columns in mobile view
   @media only screen and (max-width: 1024px) {
@@ -151,6 +154,9 @@
     }
     .column-wrapper {
       border-right: none;
+    }
+    .hero a[data-v-29082aa6]:not(.button):not(.dropdown-item):not(.tag) {
+      color: unset;
     }
   }
 </style>

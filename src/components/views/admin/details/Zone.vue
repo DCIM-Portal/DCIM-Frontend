@@ -8,13 +8,13 @@
 
 <script>
   import ApiService from '@/common/api.service'
-  import VisualDC from '@/components/lib/VisualDC/VisualDC'
+  //import VisualDC from '@/components/lib/VisualDC/VisualDC'
 
   export default {
     name: 'Zone',
-    components: {
-      'visual-dc': VisualDC
-    },
+    //components: {
+    //  'visual-dc': VisualDC
+    //},
     data () {
       return {
         modelId: parseInt(this.$route.params.id),

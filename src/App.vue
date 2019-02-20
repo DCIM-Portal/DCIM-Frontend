@@ -51,7 +51,7 @@
   // Roboto Font
   @import "./assets/css/font";
   // Vue Multiselect
-  @import "vue-multiselect/dist/vue-multiselect.min.css";
+  @import "./assets/css/vue-multiselect.min.css";
   // Custom table css
   @import "./assets/css/table";
   // Overrides
@@ -89,21 +89,9 @@
     .modal-close {
       z-index: 51;
     }
-  }
-  // Mobile fixes for auth modal
-  @media screen and (max-height: 875px) and (min-height: 600px) {
-    .auth-modal {
-      .modal-content {
-        margin-top: 25px;
-      }
-    }
-  }
-  @media screen and (max-height: 600px) {
-    .auth-modal {
-      .modal-content {
-        margin-top: 0;
-        padding-bottom: 615px;
-      }
+    .animation-content {
+      margin: 0 auto;
+      padding: 0 20px;
     }
   }
   // Loading bar indicator

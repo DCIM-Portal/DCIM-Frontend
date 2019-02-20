@@ -1,6 +1,5 @@
 <template>
   <div>
-    <div class="message-box"/>
     <h1 class="title has-text-weight-light">Sign Out</h1>
     <form
       @submit.prevent="onSubmit()"
@@ -22,6 +21,7 @@
       </p>
 
     </form>
+    <div class="message-box"/>
   </div>
 </template>
 

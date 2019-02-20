@@ -52,11 +52,13 @@ export default {
 
 <style lang="scss">
 // Fix breadcrumb spacing (also set font-size/weight)
-.breadcrumb {
-  font-size: 0.9rem;
-  font-weight: 400;
-  a {
-    padding: 0;
+.level-right {
+  .breadcrumb {
+    font-size: 0.9rem;
+    font-weight: 400;
+    a {
+      padding: 0;
+    }
   }
 }
 </style>

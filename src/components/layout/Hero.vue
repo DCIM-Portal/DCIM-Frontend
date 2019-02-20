@@ -227,12 +227,12 @@ export default {
 // Media customizations
 @media screen and (max-width: 1024px) {
   .navbar-item.is-mega {
-    max-width: initial;
+    max-width: 100%;
     margin-bottom: 0;
     font-size: 0.9rem;
   }
 }
-@media screen and (min-width: 1025px) {
+@media screen and (min-width: 1024px) {
   .navbar-dropdown {
     background-color: white;
     border-bottom-left-radius: 6px;
@@ -247,7 +247,6 @@ export default {
     position: absolute;
     top: 100%;
     z-index: 20;
-    margin-left: -10px;
   }
 }
 // For bigger screens

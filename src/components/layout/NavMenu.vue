@@ -84,7 +84,7 @@
       font-weight: 600;
     }
     a:not(.button):not(.dropdown-item):not(.tag) {
-      color: black;
+      color: black !important;
     }
   }
   .has-text-info {
@@ -122,10 +122,6 @@
   .column:last-child .column-wrapper {
     border-right: none;
   }
-  .hero a[data-v-29082aa6]:not(.button):not(.dropdown-item):not(.tag) {
-    color: black;
-  }
-
   // IE fix for columns in mobile view
   @media only screen and (max-width: 1024px) {
     _:-ms-fullscreen, :root .columns:not(.is-desktop) {
@@ -140,7 +136,7 @@
         color: rgba(255, 255, 255, 0.9);
       }
       a:not(.button):not(.dropdown-item):not(.tag) {
-        color: #b9b9b9;
+        color: #b9b9b9 !important;
       }
     }
     .has-text-info {
@@ -154,9 +150,6 @@
     }
     .column-wrapper {
       border-right: none;
-    }
-    .hero a[data-v-29082aa6]:not(.button):not(.dropdown-item):not(.tag) {
-      color: unset;
     }
   }
 </style>
